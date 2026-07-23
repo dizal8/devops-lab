@@ -289,5 +289,153 @@ data:
       <footer>
         DZL DevOps Lab · Debian · Docker · Kubernetes · Helm · Terraform · GitOps · Observability
       </footer>
+
+      <script>
+        const platforms = {
+          "Linux Infrastructure": {
+            link: "http://grafana.dzl.ro/dashboards",
+            health: "http://grafana.dzl.ro/api/health"
+          },
+          "Docker": {
+            link: "https://github.com/dizal8/devops-lab/tree/main/docker",
+            health: "http://dzl.ro"
+          },
+          "Kubernetes": {
+            link: "http://grafana.dzl.ro/dashboards",
+            health: "http://dzl.ro"
+          },
+          "Terraform": {
+            link: "https://github.com/dizal8/devops-lab/tree/main/terraform"
+          },
+          "Helm": {
+            link: "https://github.com/dizal8/devops-lab/tree/main/helm",
+            health: "http://dzl.ro"
+          },
+          "GitHub Actions": {
+            link: "https://github.com/dizal8/devops-lab/actions"
+          },
+          "Argo CD": {
+            link: "http://argocd.dzl.ro",
+            health: "http://argocd.dzl.ro"
+          },
+          "Grafana": {
+            link: "http://grafana.dzl.ro",
+            health: "http://grafana.dzl.ro/api/health"
+          },
+          "Prometheus": {
+            link: "http://prometheus.dzl.ro",
+            health: "http://prometheus.dzl.ro/-/ready"
+          },
+          "Loki & Alloy": {
+            link: "http://grafana.dzl.ro/explore",
+            health: "http://grafana.dzl.ro/api/health"
+          },
+          "Trivy": {
+            link: "https://github.com/dizal8/devops-lab/actions"
+          },
+          "Traefik Ingress": {
+            link: "http://dzl.ro",
+            health: "http://dzl.ro"
+          }
+        };
+
+        const style = document.createElement("style");
+        style.textContent = `
+          .card {
+            cursor: pointer;
+            position: relative;
+          }
+
+          .live-indicator {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #64748b;
+            box-shadow: 0 0 10px rgba(100, 116, 139, 0.7);
+          }
+
+          .live-indicator.online {
+            background: #34d399;
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.9);
+          }
+
+          .live-indicator.offline {
+            background: #f87171;
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.9);
+          }
+
+          .live-text {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #94a3b8;
+            letter-spacing: 0.3px;
+          }
+        `;
+        document.head.appendChild(style);
+
+        async function checkService(card, config) {
+          const indicator = card.querySelector(".live-indicator");
+          const liveText = card.querySelector(".live-text");
+
+          if (!config.health) {
+            indicator.className = "live-indicator";
+            liveText.textContent = "OPEN REPOSITORY";
+            return;
+          }
+
+          liveText.textContent = "CHECKING...";
+
+          try {
+            await fetch(config.health, {
+              mode: "no-cors",
+              cache: "no-store"
+            });
+
+            indicator.className = "live-indicator online";
+            liveText.textContent =
+              "LIVE · " + new Date().toLocaleTimeString("ro-RO");
+          } catch (error) {
+            indicator.className = "live-indicator offline";
+            liveText.textContent = "UNREACHABLE";
+          }
+        }
+
+        document.querySelectorAll(".card").forEach((card) => {
+          const title = card.querySelector("h2")?.textContent.trim();
+          const config = platforms[title];
+
+          if (!config) return;
+
+          const indicator = document.createElement("span");
+          indicator.className = "live-indicator";
+          card.appendChild(indicator);
+
+          const liveText = document.createElement("div");
+          liveText.className = "live-text";
+          liveText.textContent = "INITIALIZING...";
+          card.appendChild(liveText);
+
+          card.setAttribute("tabindex", "0");
+          card.setAttribute("role", "link");
+          card.title = "Open " + title;
+
+          card.addEventListener("click", () => {
+            window.open(config.link, "_blank", "noopener,noreferrer");
+          });
+
+          card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+              window.open(config.link, "_blank", "noopener,noreferrer");
+            }
+          });
+
+          checkService(card, config);
+          setInterval(() => checkService(card, config), 15000);
+        });
+      </script>
+
     </body>
     </html>
