@@ -1,0 +1,448 @@
+#!/usr/bin/env python3
+
+import argparse
+import datetime
+import pathlib
+import subprocess
+import sys
+import time
+
+REPO = pathlib.Path.home() / "devops-lab"
+PORTAL_FILE = REPO / "kubernetes/dizal-web/configmap.yaml"
+
+APP = "dizal-web"
+NAMESPACE = "default"
+ARGO_NAMESPACE = "argocd"
+CONFIGMAP = "dizal-web-content"
+PORTAL_URL = "http://192.168.0.102"
+PORTAL_HOST = "dzl.ro"
+
+
+def run(command, check=True, capture=False):
+    print(f"\033[90m$ {command}\033[0m")
+
+    result = subprocess.run(
+        command,
+        shell=True,
+        cwd=REPO,
+        text=True,
+        stdout=subprocess.PIPE if capture else None,
+        stderr=subprocess.STDOUT if capture else None,
+    )
+
+    if check and result.returncode != 0:
+        if capture and result.stdout:
+            print(result.stdout)
+        raise RuntimeError(f"Command failed: {command}")
+
+    return result.stdout.strip() if capture else ""
+
+
+def success(message):
+    print(f"\033[92m✔ {message}\033[0m")
+
+
+def info(message):
+    print(f"\033[96m→ {message}\033[0m")
+
+
+def warning(message):
+    print(f"\033[93m⚠ {message}\033[0m")
+
+
+def fail(message):
+    print(f"\033[91m✘ {message}\033[0m")
+
+
+def git_has_changes():
+    output = run(
+        "git status --porcelain -- "
+        "kubernetes/dizal-web/configmap.yaml "
+        "scripts/dzl",
+        capture=True,
+    )
+    return bool(output)
+
+
+def git_commit_and_push(message):
+    if git_has_changes():
+        run(
+            "git add "
+            "kubernetes/dizal-web/configmap.yaml "
+            "scripts/dzl"
+        )
+        run(f'git commit -m "{message}"')
+        run("git push origin main")
+        success("Changes committed and pushed")
+    else:
+        info("No local changes to commit")
+        run("git push origin main")
+        success("Repository is up to date")
+
+
+def hard_refresh_argocd():
+    run(
+        f"kubectl annotate application {APP} "
+        f"-n {ARGO_NAMESPACE} "
+        "argocd.argoproj.io/refresh=hard "
+        "--overwrite"
+    )
+    success("Argo CD hard refresh requested")
+
+
+def wait_for_argocd(timeout=180):
+    info("Waiting for Argo CD to become Synced and Healthy")
+
+    started = time.time()
+
+    while time.time() - started < timeout:
+        sync = run(
+            f"kubectl get application {APP} "
+            f"-n {ARGO_NAMESPACE} "
+            "-o jsonpath='{.status.sync.status}'",
+            capture=True,
+            check=False,
+        )
+
+        health = run(
+            f"kubectl get application {APP} "
+            f"-n {ARGO_NAMESPACE} "
+            "-o jsonpath='{.status.health.status}'",
+            capture=True,
+            check=False,
+        )
+
+        print(f"  sync={sync or 'Unknown'} health={health or 'Unknown'}")
+
+        if sync == "Synced" and health == "Healthy":
+            success("Argo CD is Synced and Healthy")
+            return
+
+        time.sleep(5)
+
+    raise RuntimeError("Argo CD synchronization timed out")
+
+
+def verify_configmap(marker):
+    info("Verifying live ConfigMap")
+
+    html = run(
+        f"kubectl get configmap {CONFIGMAP} "
+        f"-n {NAMESPACE} "
+        "-o jsonpath='{.data.index\\.html}'",
+        capture=True,
+    )
+
+    if marker not in html:
+        raise RuntimeError(
+            f"Marker not found in live ConfigMap: {marker}"
+        )
+
+    success(f"Live ConfigMap contains marker: {marker}")
+
+
+def restart_portal():
+    run(
+        f"kubectl rollout restart deployment/{APP} "
+        f"-n {NAMESPACE}"
+    )
+
+    run(
+        f"kubectl rollout status deployment/{APP} "
+        f"-n {NAMESPACE} "
+        "--timeout=180s"
+    )
+
+    success("Portal deployment restarted successfully")
+
+
+def verify_http(marker):
+    info("Verifying HTML served through Traefik")
+
+    started = time.time()
+
+    while time.time() - started < 120:
+        html = run(
+            f'curl -fsS -H "Host: {PORTAL_HOST}" {PORTAL_URL}',
+            capture=True,
+            check=False,
+        )
+
+        if marker in html:
+            success("New portal HTML is live")
+            return
+
+        time.sleep(3)
+
+    raise RuntimeError(
+        f"Marker not found in HTTP response: {marker}"
+    )
+
+
+def command_deploy(args):
+    if not PORTAL_FILE.exists():
+        raise RuntimeError(f"Missing file: {PORTAL_FILE}")
+
+    local_content = PORTAL_FILE.read_text()
+
+    if args.marker not in local_content:
+        raise RuntimeError(
+            f"Marker not found in local portal file: {args.marker}"
+        )
+
+    print()
+    print("DZL PLATFORM DEPLOY")
+    print("=" * 50)
+
+    git_commit_and_push(args.message)
+    hard_refresh_argocd()
+    wait_for_argocd()
+    verify_configmap(args.marker)
+    restart_portal()
+    verify_http(args.marker)
+
+    print()
+    success("Deployment completed successfully")
+    print(f"Open: http://{PORTAL_HOST}")
+
+
+def command_status(_args):
+    print()
+    print("DZL PLATFORM STATUS")
+    print("=" * 50)
+
+    run("kubectl get nodes")
+    print()
+
+    run(
+        "kubectl get application dizal-web "
+        "-n argocd"
+    )
+    print()
+
+    run(
+        "kubectl get deployments,pods,hpa "
+        "-n default"
+    )
+    print()
+
+    run("helm list -A")
+
+
+def command_health(_args):
+    print()
+    print("DZL PLATFORM HEALTH")
+    print("=" * 50)
+
+    checks = [
+        ("Portal", 'curl -fsS -H "Host: dzl.ro" http://192.168.0.102'),
+        (
+            "Grafana",
+            'curl -fsS -H "Host: grafana.dzl.ro" '
+            "http://192.168.0.102/api/health",
+        ),
+        (
+            "Prometheus",
+            'curl -fsS -H "Host: prometheus.dzl.ro" '
+            "http://192.168.0.102/-/ready",
+        ),
+        (
+            "Argo CD",
+            'curl -fsS -H "Host: argocd.dzl.ro" '
+            "http://192.168.0.102",
+        ),
+    ]
+
+    failed = 0
+
+    for name, command in checks:
+        result = subprocess.run(
+            command,
+            shell=True,
+            cwd=REPO,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+        if result.returncode == 0:
+            success(f"{name}: reachable")
+        else:
+            fail(f"{name}: unreachable")
+            failed += 1
+
+    pods_not_running = run(
+        "kubectl get pods -A "
+        "--field-selector=status.phase!=Running,status.phase!=Succeeded "
+        "--no-headers",
+        capture=True,
+        check=False,
+    )
+
+    if pods_not_running:
+        warning("Pods not Running/Succeeded:")
+        print(pods_not_running)
+    else:
+        success("All pods are Running or Succeeded")
+
+    if failed:
+        sys.exit(1)
+
+
+def command_logs(args):
+    print()
+    print("DZL PLATFORM LOGS")
+    print("=" * 50)
+
+    if args.component == "portal":
+        run(
+            f"kubectl logs -n default "
+            f"-l app=dizal-web "
+            f"--tail={args.lines}"
+        )
+
+    elif args.component == "alloy":
+        run(
+            f"kubectl logs -n logging "
+            f"deployment/alloy "
+            f"-c alloy "
+            f"--tail={args.lines}"
+        )
+
+    elif args.component == "argocd":
+        run(
+            f"kubectl logs -n argocd "
+            f"deployment/argocd-server "
+            f"--tail={args.lines}"
+        )
+
+    elif args.component == "traefik":
+        run(
+            f"kubectl logs -n kube-system "
+            f"deployment/traefik "
+            f"--tail={args.lines}"
+        )
+
+
+def command_restart(_args):
+    restart_portal()
+
+
+def command_sync(_args):
+    hard_refresh_argocd()
+    wait_for_argocd()
+
+
+def command_rollback(_args):
+    run(
+        f"kubectl rollout undo deployment/{APP} "
+        f"-n {NAMESPACE}"
+    )
+
+    run(
+        f"kubectl rollout status deployment/{APP} "
+        f"-n {NAMESPACE} "
+        "--timeout=180s"
+    )
+
+    success("Deployment rollback completed")
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(
+        prog="dzl",
+        description="DZL DevOps Platform CLI",
+    )
+
+    subparsers = parser.add_subparsers(
+        dest="command",
+        required=True,
+    )
+
+    deploy = subparsers.add_parser(
+        "deploy",
+        help="Commit, push, sync and deploy the portal",
+    )
+
+    deploy.add_argument(
+        "--marker",
+        default="DZL DevOps Platform",
+        help="Text expected in the portal HTML",
+    )
+
+    deploy.add_argument(
+        "--message",
+        default=(
+            "Update DZL platform portal "
+            + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ),
+        help="Git commit message",
+    )
+
+    deploy.set_defaults(func=command_deploy)
+
+    status = subparsers.add_parser(
+        "status",
+        help="Show platform status",
+    )
+    status.set_defaults(func=command_status)
+
+    health = subparsers.add_parser(
+        "health",
+        help="Run health checks",
+    )
+    health.set_defaults(func=command_health)
+
+    logs = subparsers.add_parser(
+        "logs",
+        help="Show component logs",
+    )
+    logs.add_argument(
+        "component",
+        choices=["portal", "alloy", "argocd", "traefik"],
+    )
+    logs.add_argument(
+        "--lines",
+        type=int,
+        default=100,
+    )
+    logs.set_defaults(func=command_logs)
+
+    restart = subparsers.add_parser(
+        "restart",
+        help="Restart portal deployment",
+    )
+    restart.set_defaults(func=command_restart)
+
+    sync = subparsers.add_parser(
+        "sync",
+        help="Force Argo CD refresh and wait for sync",
+    )
+    sync.set_defaults(func=command_sync)
+
+    rollback = subparsers.add_parser(
+        "rollback",
+        help="Rollback portal deployment",
+    )
+    rollback.set_defaults(func=command_rollback)
+
+    return parser
+
+
+def main():
+    parser = build_parser()
+    args = parser.parse_args()
+
+    try:
+        args.func(args)
+    except KeyboardInterrupt:
+        print()
+        warning("Operation cancelled")
+        sys.exit(130)
+    except Exception as error:
+        print()
+        fail(str(error))
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
