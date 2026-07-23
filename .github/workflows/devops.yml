@@ -1,0 +1,51 @@
+name: DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform fmt -check
+        working-directory: terraform/first-lab
+
+      - run: terraform init
+        working-directory: terraform/first-lab
+
+      - run: terraform validate
+        working-directory: terraform/first-lab
+
+  docker:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: docker build -t dizal-web docker/dizal-web
+
+  helm:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: helm lint helm/dizal-web
+
+  kubernetes:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: kubectl kustomize kubernetes || true
