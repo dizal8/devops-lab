@@ -614,6 +614,11 @@ data:
             box-shadow: 0 0 12px rgba(248, 113, 113, 0.9);
           }
 
+          .live-indicator.repository {
+            background: #60a5fa;
+            box-shadow: 0 0 12px rgba(96, 165, 250, 0.9);
+          }
+
           .live-text {
             margin-top: 12px;
             font-size: 11px;
@@ -628,8 +633,16 @@ data:
           const liveText = card.querySelector(".live-text");
 
           if (!config.health) {
-            indicator.className = "live-indicator";
-            liveText.textContent = "OPEN REPOSITORY";
+            indicator.className = "live-indicator repository";
+
+            if (title === "Trivy") {
+              liveText.textContent = "CLI SECURITY TOOL";
+            } else if (title === "GitHub Actions") {
+              liveText.textContent = "CI WORKFLOWS";
+            } else {
+              liveText.textContent = "SOURCE REPOSITORY";
+            }
+
             return;
           }
 
