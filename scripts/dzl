@@ -54,6 +54,18 @@ def fail(message):
     print(f"\033[91m✘ {message}\033[0m")
 
 
+
+def validate_manifests():
+    info("Validating Kubernetes manifests before commit")
+
+    run(
+        "kubectl apply --dry-run=client "
+        "-f kubernetes/dizal-web/configmap.yaml"
+    )
+
+    success("Kubernetes YAML validation passed")
+
+
 def git_has_changes():
     output = run(
         "git status --porcelain -- "
@@ -219,6 +231,7 @@ def command_deploy(args):
     print("DZL PLATFORM DEPLOY")
     print("=" * 50)
 
+    validate_manifests()
     git_commit_and_push(args.message)
     hard_refresh_argocd()
     wait_for_argocd()
