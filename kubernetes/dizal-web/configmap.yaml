@@ -173,6 +173,144 @@ data:
             transform: rotate(90deg);
           }
         }
+
+        /* DZL portal enhancements */
+        .quick-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 9px;
+          align-items: center;
+          justify-content: flex-end;
+        }
+
+        .quick-action {
+          padding: 9px 13px;
+          border: 1px solid #304767;
+          border-radius: 10px;
+          background: #13223a;
+          color: #dbeafe;
+          font-size: 13px;
+          font-weight: 700;
+          transition: transform 0.18s ease, border-color 0.18s ease;
+        }
+
+        .quick-action:hover {
+          transform: translateY(-2px);
+          border-color: #60a5fa;
+        }
+
+        .platform-summary {
+          border-bottom: 1px solid #1f3049;
+          background: rgba(11, 23, 41, 0.92);
+        }
+
+        .summary-inner {
+          max-width: 1250px;
+          margin: auto;
+          padding: 14px 24px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 9px;
+        }
+
+        .technology-pill {
+          padding: 7px 11px;
+          border: 1px solid #263b59;
+          border-radius: 999px;
+          color: #a9bddb;
+          background: #0f1c30;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .health-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+          gap: 14px;
+          margin-bottom: 38px;
+        }
+
+        .health-card {
+          padding: 19px;
+          border: 1px solid #233750;
+          border-radius: 14px;
+          background: linear-gradient(145deg, #101e33, #0b1728);
+        }
+
+        .health-label {
+          color: #8fa4c4;
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.7px;
+        }
+
+        .health-value {
+          margin-top: 9px;
+          font-size: 27px;
+          font-weight: 800;
+          color: #f1f5f9;
+        }
+
+        .health-detail {
+          margin-top: 5px;
+          color: #6ee7b7;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .commit-panel {
+          margin-bottom: 38px;
+          padding: 19px 22px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          flex-wrap: wrap;
+          border: 1px solid #233750;
+          border-radius: 14px;
+          background: #0c182b;
+        }
+
+        .commit-title {
+          font-size: 12px;
+          color: #8fa4c4;
+          text-transform: uppercase;
+          font-weight: 700;
+          letter-spacing: 0.7px;
+        }
+
+        .commit-message {
+          margin-top: 7px;
+          font-size: 15px;
+          font-weight: 700;
+        }
+
+        .commit-meta {
+          color: #8fa4c4;
+          font-size: 12px;
+        }
+
+        .footer-links {
+          margin-top: 12px;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 15px;
+        }
+
+        .footer-links a {
+          color: #60a5fa;
+          font-weight: 700;
+        }
+
+        @media (max-width: 760px) {
+          .quick-actions {
+            justify-content: flex-start;
+          }
+        }
+
       </style>
     </head>
 
@@ -186,11 +324,41 @@ data:
             </p>
           </div>
 
+
+          <!-- DZL-PORTAL-ENHANCEMENT-START -->
+          <div class="quick-actions">
+            <a class="quick-action" href="http://grafana.dzl.ro" target="_blank">Grafana</a>
+            <a class="quick-action" href="http://argocd.dzl.ro" target="_blank">Argo CD</a>
+            <a class="quick-action" href="http://prometheus.dzl.ro" target="_blank">Prometheus</a>
+            <a class="quick-action" href="https://github.com/dizal8/devops-lab" target="_blank">GitHub</a>
+            <a class="quick-action" href="https://github.com/dizal8/devops-lab/actions" target="_blank">Actions</a>
+          </div>
+          <!-- DZL-PORTAL-ENHANCEMENT-END -->
+
           <div class="cluster-badge">
             ● K3s Cluster Operational
           </div>
         </div>
       </header>
+
+      <!-- DZL-PORTAL-ENHANCEMENT-START -->
+      <section class="platform-summary">
+        <div class="summary-inner">
+          <span class="technology-pill">Debian 13</span>
+          <span class="technology-pill">Docker</span>
+          <span class="technology-pill">Kubernetes K3s</span>
+          <span class="technology-pill">Helm</span>
+          <span class="technology-pill">Terraform</span>
+          <span class="technology-pill">Traefik</span>
+          <span class="technology-pill">Argo CD</span>
+          <span class="technology-pill">Prometheus</span>
+          <span class="technology-pill">Grafana</span>
+          <span class="technology-pill">Loki + Alloy</span>
+          <span class="technology-pill">Trivy</span>
+        </div>
+      </section>
+      <!-- DZL-PORTAL-ENHANCEMENT-END -->
+
 
       <main>
         <h2 class="section-title">Platform capabilities</h2>
@@ -269,6 +437,60 @@ data:
           </div>
         </section>
 
+
+        <!-- DZL-HEALTH-SECTION-START -->
+        <h2 class="section-title">Platform health</h2>
+
+        <section class="health-grid">
+          <div class="health-card">
+            <div class="health-label">Pods running</div>
+            <div class="health-value">29/32</div>
+            <div class="health-detail">Kubernetes workloads</div>
+          </div>
+
+          <div class="health-card">
+            <div class="health-label">Namespaces</div>
+            <div class="health-value">7</div>
+            <div class="health-detail">Logical environments</div>
+          </div>
+
+          <div class="health-card">
+            <div class="health-label">Deployments</div>
+            <div class="health-value">17</div>
+            <div class="health-detail">Managed workloads</div>
+          </div>
+
+          <div class="health-card">
+            <div class="health-label">Helm releases</div>
+            <div class="health-value">6</div>
+            <div class="health-detail">Deployed applications</div>
+          </div>
+
+          <div class="health-card">
+            <div class="health-label">CI pipeline</div>
+            <div class="health-value">PASSING</div>
+            <div class="health-detail">GitHub Actions</div>
+          </div>
+
+          <div class="health-card">
+            <div class="health-label">Last refresh</div>
+            <div class="health-value" id="portal-time">--:--:--</div>
+            <div class="health-detail">Browser local time</div>
+          </div>
+        </section>
+
+        <section class="commit-panel">
+          <div>
+            <div class="commit-title">Latest GitHub commit</div>
+            <div class="commit-message" id="latest-commit">Loading repository activity...</div>
+          </div>
+
+          <div class="commit-meta" id="latest-commit-meta">
+            github.com/dizal8/devops-lab
+          </div>
+        </section>
+        <!-- DZL-HEALTH-SECTION-END -->
+
         <section class="architecture">
           <h2 class="section-title">Delivery architecture</h2>
 
@@ -287,7 +509,15 @@ data:
       </main>
 
       <footer>
-        DZL DevOps Lab · Debian · Docker · Kubernetes · Helm · Terraform · GitOps · Observability
+        <strong>DZL Platform Engineering Lab</strong><br>
+        Built by Mihai Robert Orjanu · Debian · Docker · Kubernetes · Helm · Terraform · GitOps · Observability
+
+        <div class="footer-links">
+          <a href="https://github.com/dizal8/devops-lab" target="_blank">GitHub Repository</a>
+          <a href="https://github.com/dizal8/devops-lab/actions" target="_blank">CI Workflows</a>
+          <a href="http://grafana.dzl.ro" target="_blank">Grafana</a>
+          <a href="http://argocd.dzl.ro" target="_blank">Argo CD</a>
+        </div>
       </footer>
 
       <script>
@@ -436,6 +666,58 @@ data:
           setInterval(() => checkService(card, config), 15000);
         });
       </script>
+
+    
+      <!-- DZL-PORTAL-SCRIPT-START -->
+      <script>
+        function updatePortalTime() {
+          const element = document.getElementById("portal-time");
+          if (element) {
+            element.textContent = new Date().toLocaleTimeString("ro-RO");
+          }
+        }
+
+        async function loadLatestCommit() {
+          const messageElement = document.getElementById("latest-commit");
+          const metaElement = document.getElementById("latest-commit-meta");
+
+          try {
+            const response = await fetch(
+              "https://api.github.com/repos/dizal8/devops-lab/commits?per_page=1",
+              { cache: "no-store" }
+            );
+
+            if (!response.ok) {
+              throw new Error("GitHub API returned " + response.status);
+            }
+
+            const commits = await response.json();
+            const commit = commits[0];
+
+            messageElement.textContent =
+              commit.commit.message.split("\n")[0];
+
+            const date = new Date(commit.commit.author.date);
+
+            metaElement.textContent =
+              commit.sha.slice(0, 7) +
+              " · " +
+              date.toLocaleString("ro-RO");
+          } catch (error) {
+            messageElement.textContent =
+              "Repository available — commit API temporarily unavailable";
+
+            metaElement.textContent =
+              "github.com/dizal8/devops-lab";
+          }
+        }
+
+        updatePortalTime();
+        setInterval(updatePortalTime, 1000);
+        loadLatestCommit();
+        setInterval(loadLatestCommit, 60000);
+      </script>
+      <!-- DZL-PORTAL-SCRIPT-END -->
 
     </body>
     </html>
