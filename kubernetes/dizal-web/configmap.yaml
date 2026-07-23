@@ -2,6 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: dizal-web-content
+  labels:
+    app: dizal-web
 data:
   index.html: |
     <!DOCTYPE html>
@@ -17,117 +19,275 @@ data:
 
         body {
           margin: 0;
-          font-family: Arial, sans-serif;
-          background: #0b1220;
-          color: #e5e7eb;
+          font-family: Inter, Arial, sans-serif;
+          background:
+            radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 35%),
+            #07101f;
+          color: #e5eefc;
+          min-height: 100vh;
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
         }
 
         header {
-          padding: 40px;
-          background: #111827;
-          border-bottom: 1px solid #263244;
+          padding: 46px 6%;
+          border-bottom: 1px solid #23324a;
+          background: rgba(11, 22, 40, 0.86);
         }
 
-        header h1 {
+        .header-content {
+          max-width: 1250px;
+          margin: auto;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 30px;
+          flex-wrap: wrap;
+        }
+
+        h1 {
           margin: 0 0 10px;
-          font-size: 38px;
+          font-size: 42px;
+          letter-spacing: -1px;
         }
 
-        header p {
+        .subtitle {
           margin: 0;
-          color: #94a3b8;
+          color: #9fb2d0;
+          font-size: 17px;
+        }
+
+        .cluster-badge {
+          padding: 12px 18px;
+          border: 1px solid #1e8f62;
+          border-radius: 999px;
+          background: rgba(16, 185, 129, 0.12);
+          color: #6ee7b7;
+          font-weight: 700;
         }
 
         main {
-          max-width: 1100px;
+          max-width: 1250px;
           margin: auto;
-          padding: 40px 20px;
+          padding: 38px 24px 60px;
+        }
+
+        .section-title {
+          margin: 0 0 18px;
+          font-size: 22px;
         }
 
         .grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+          gap: 18px;
+          margin-bottom: 38px;
         }
 
         .card {
-          background: #111827;
-          border: 1px solid #263244;
-          border-radius: 12px;
+          min-height: 180px;
           padding: 24px;
+          border: 1px solid #23324a;
+          border-radius: 16px;
+          background: linear-gradient(145deg, #111d31, #0c1728);
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-4px);
+          border-color: #3b82f6;
         }
 
         .card h2 {
-          margin-top: 0;
-          font-size: 20px;
+          margin: 0 0 10px;
+          font-size: 19px;
+        }
+
+        .card p {
+          min-height: 42px;
+          margin: 0 0 18px;
+          color: #aebdd3;
+          line-height: 1.45;
         }
 
         .status {
           display: inline-block;
-          padding: 6px 10px;
-          border-radius: 20px;
-          background: #064e3b;
-          color: #6ee7b7;
-          font-size: 13px;
-          font-weight: bold;
+          padding: 6px 11px;
+          border-radius: 999px;
+          background: #075b43;
+          color: #78f0c0;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.4px;
+        }
+
+        .link {
+          display: block;
+        }
+
+        .architecture {
+          padding: 26px;
+          border: 1px solid #23324a;
+          border-radius: 16px;
+          background: #0c1728;
+        }
+
+        .flow {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 20px;
+        }
+
+        .flow-item {
+          padding: 12px 18px;
+          border-radius: 10px;
+          background: #15243a;
+          border: 1px solid #2c405f;
+          font-weight: 700;
+        }
+
+        .arrow {
+          color: #60a5fa;
+          font-size: 22px;
         }
 
         footer {
+          padding: 28px;
           text-align: center;
-          padding: 30px;
-          color: #64748b;
+          color: #7386a5;
+          border-top: 1px solid #1c2b42;
+        }
+
+        @media (max-width: 600px) {
+          h1 {
+            font-size: 32px;
+          }
+
+          .arrow {
+            transform: rotate(90deg);
+          }
         }
       </style>
     </head>
 
     <body>
       <header>
-        <h1>DZL DevOps Platform</h1>
-        <p>Personal DevOps laboratory running on Debian and Kubernetes.</p>
+        <div class="header-content">
+          <div>
+            <h1>DZL DevOps Platform</h1>
+            <p class="subtitle">
+              Kubernetes home lab with CI/CD, GitOps, observability and security scanning
+            </p>
+          </div>
+
+          <div class="cluster-badge">
+            ● K3s Cluster Operational
+          </div>
+        </div>
       </header>
 
       <main>
-        <div class="grid">
+        <h2 class="section-title">Platform capabilities</h2>
+
+        <section class="grid">
           <div class="card">
-            <h2>Infrastructure</h2>
-            <p>Debian Linux Server</p>
+            <h2>Linux Infrastructure</h2>
+            <p>Debian 13 server hosting the container and Kubernetes platform.</p>
             <span class="status">ONLINE</span>
           </div>
 
           <div class="card">
-            <h2>Containers</h2>
-            <p>Docker Engine and Docker Compose</p>
+            <h2>Docker</h2>
+            <p>Containerized Nginx application with Docker Compose support.</p>
             <span class="status">ACTIVE</span>
           </div>
 
           <div class="card">
             <h2>Kubernetes</h2>
-            <p>K3s cluster with replicated workloads</p>
+            <p>K3s cluster with health probes, resource limits and autoscaling.</p>
             <span class="status">READY</span>
           </div>
 
           <div class="card">
-            <h2>Infrastructure as Code</h2>
-            <p>Terraform-managed laboratory resources</p>
+            <h2>Terraform</h2>
+            <p>Infrastructure as Code validation integrated into CI workflows.</p>
             <span class="status">VALIDATED</span>
           </div>
 
           <div class="card">
-            <h2>Package Management</h2>
-            <p>Helm charts and release management</p>
+            <h2>Helm</h2>
+            <p>Reusable application chart with deployment and service templates.</p>
             <span class="status">DEPLOYED</span>
           </div>
 
           <div class="card">
-            <h2>CI/CD</h2>
-            <p>GitHub Actions validation pipeline</p>
-            <span class="status">ENABLED</span>
+            <h2>GitHub Actions</h2>
+            <p>Automated validation for Terraform, Docker, Kubernetes and Helm.</p>
+            <span class="status">PASSING</span>
           </div>
-        </div>
+
+          <a class="card link" href="http://argocd.dzl.ro" target="_blank">
+            <h2>Argo CD</h2>
+            <p>GitOps deployment with automated synchronization and self-healing.</p>
+            <span class="status">SYNCED</span>
+          </a>
+
+          <a class="card link" href="http://grafana.dzl.ro" target="_blank">
+            <h2>Grafana</h2>
+            <p>Dashboards for cluster CPU, memory, workloads and infrastructure.</p>
+            <span class="status">MONITORING</span>
+          </a>
+
+          <a class="card link" href="http://prometheus.dzl.ro" target="_blank">
+            <h2>Prometheus</h2>
+            <p>Metrics collection for Kubernetes, nodes, pods and services.</p>
+            <span class="status">COLLECTING</span>
+          </a>
+
+          <a class="card link" href="http://grafana.dzl.ro/explore" target="_blank">
+            <h2>Loki & Alloy</h2>
+            <p>Centralized Kubernetes logs collected and queried through Grafana.</p>
+            <span class="status">STREAMING</span>
+          </a>
+
+          <div class="card">
+            <h2>Trivy</h2>
+            <p>Container image and Infrastructure as Code security scanning.</p>
+            <span class="status">SCANNING</span>
+          </div>
+
+          <div class="card">
+            <h2>Traefik Ingress</h2>
+            <p>Host-based routing for platform applications and observability tools.</p>
+            <span class="status">ROUTING</span>
+          </div>
+        </section>
+
+        <section class="architecture">
+          <h2 class="section-title">Delivery architecture</h2>
+
+          <div class="flow">
+            <div class="flow-item">GitHub</div>
+            <div class="arrow">→</div>
+            <div class="flow-item">GitHub Actions</div>
+            <div class="arrow">→</div>
+            <div class="flow-item">Argo CD</div>
+            <div class="arrow">→</div>
+            <div class="flow-item">Kubernetes</div>
+            <div class="arrow">→</div>
+            <div class="flow-item">Observability</div>
+          </div>
+        </section>
       </main>
 
       <footer>
-        DZL DevOps Lab · Built with Docker, Kubernetes, Helm and Terraform
+        DZL DevOps Lab · Debian · Docker · Kubernetes · Helm · Terraform · GitOps · Observability
       </footer>
     </body>
     </html>
