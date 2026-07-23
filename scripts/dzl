@@ -90,10 +90,11 @@ def hard_refresh_argocd():
     success("Argo CD hard refresh requested")
 
 
-def wait_for_argocd(timeout=180):
-    info("Waiting for Argo CD to become Synced and Healthy")
+def wait_for_argocd(timeout=90):
+    info("Waiting for Argo CD refresh")
 
     started = time.time()
+    unknown_since = None
 
     while time.time() - started < timeout:
         sync = run(
@@ -118,27 +119,51 @@ def wait_for_argocd(timeout=180):
             success("Argo CD is Synced and Healthy")
             return
 
+        if sync == "Unknown" and health == "Healthy":
+            if unknown_since is None:
+                unknown_since = time.time()
+
+            if time.time() - unknown_since >= 20:
+                warning(
+                    "Argo CD comparison remains Unknown, "
+                    "continuing with live resource verification"
+                )
+                return
+        else:
+            unknown_since = None
+
         time.sleep(5)
 
-    raise RuntimeError("Argo CD synchronization timed out")
-
-
-def verify_configmap(marker):
-    info("Verifying live ConfigMap")
-
-    html = run(
-        f"kubectl get configmap {CONFIGMAP} "
-        f"-n {NAMESPACE} "
-        "-o jsonpath='{.data.index\\.html}'",
-        capture=True,
+    warning(
+        "Argo CD status did not stabilize; "
+        "continuing with live resource verification"
     )
 
-    if marker not in html:
-        raise RuntimeError(
-            f"Marker not found in live ConfigMap: {marker}"
+
+def verify_configmap(marker, timeout=180):
+    info("Waiting for the live ConfigMap update")
+
+    started = time.time()
+
+    while time.time() - started < timeout:
+        html = run(
+            f"kubectl get configmap {CONFIGMAP} "
+            f"-n {NAMESPACE} "
+            "-o jsonpath='{.data.index\.html}'",
+            capture=True,
+            check=False,
         )
 
-    success(f"Live ConfigMap contains marker: {marker}")
+        if marker in html:
+            success(f"Live ConfigMap contains marker: {marker}")
+            return
+
+        print("  ConfigMap not updated yet...")
+        time.sleep(5)
+
+    raise RuntimeError(
+        f"Marker not found in live ConfigMap after {timeout}s: {marker}"
+    )
 
 
 def restart_portal():
