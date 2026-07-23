@@ -339,26 +339,9 @@ data:
             ● K3s Cluster Operational
           </div>
         </div>
-
-    <div class="technology-stack">
-    <span class="technology-pill">Debian 13</span>
-    <span class="technology-pill">Docker</span>
-    <span class="technology-pill">Kubernetes K3s</span>
-    <span class="technology-pill">Helm</span>
-    <span class="technology-pill">Terraform</span>
-    <span class="technology-pill">Traefik</span>
-    <span class="technology-pill">Argo CD</span>
-    <span class="technology-pill">Prometheus</span>
-    <span class="technology-pill">Grafana</span>
-    <span class="technology-pill">Loki + Alloy</span>
-    <span class="technology-pill">Trivy</span>
-    <span class="technology-pill">GitHub Actions</span>
-    </div>
-
     </header>
 
-
-      <!-- DZL-PORTAL-ENHANCEMENT-START -->
+      <!-- DZL-TECHNOLOGY-BAR-START -->
       <section class="platform-summary">
         <div class="summary-inner">
           <span class="technology-pill">Debian 13</span>
@@ -372,9 +355,12 @@ data:
           <span class="technology-pill">Grafana</span>
           <span class="technology-pill">Loki + Alloy</span>
           <span class="technology-pill">Trivy</span>
+          <span class="technology-pill">GitHub Actions</span>
         </div>
       </section>
-      <!-- DZL-PORTAL-ENHANCEMENT-END -->
+      <!-- DZL-TECHNOLOGY-BAR-END -->
+
+
 
 
       <main>
@@ -635,13 +621,14 @@ data:
           if (!config.health) {
             indicator.className = "live-indicator repository";
 
-            if (title === "Trivy") {
-              liveText.textContent = "CLI SECURITY TOOL";
-            } else if (title === "GitHub Actions") {
-              liveText.textContent = "CI WORKFLOWS";
-            } else {
-              liveText.textContent = "SOURCE REPOSITORY";
-            }
+            const staticStatuses = {
+              "Terraform": "SOURCE REPOSITORY",
+              "GitHub Actions": "CI WORKFLOWS",
+              "Trivy": "CLI SECURITY TOOL"
+            };
+
+            liveText.textContent =
+              staticStatuses[title] || "SOURCE REPOSITORY";
 
             return;
           }
@@ -675,7 +662,7 @@ data:
 
           const liveText = document.createElement("div");
           liveText.className = "live-text";
-          liveText.textContent = "INITIALIZING...";
+          liveText.textContent = "CHECKING...";
           card.appendChild(liveText);
 
           card.setAttribute("tabindex", "0");
