@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dizal-web
+description: Helm chart for the Dizal DevOps interview lab
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
