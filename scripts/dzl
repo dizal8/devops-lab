@@ -161,7 +161,7 @@ def verify_configmap(marker, timeout=180):
         html = run(
             f"kubectl get configmap {CONFIGMAP} "
             f"-n {NAMESPACE} "
-            "-o jsonpath='{.data.index\.html}'",
+            "-o jsonpath='{.data.index\\.html}'",
             capture=True,
             check=False,
         )
