@@ -15,3 +15,5 @@ terraform/first-lab/interview-lab.txt
 # Editors
 .vscode/
 .idea/
+
+logs/
