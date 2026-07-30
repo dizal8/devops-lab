@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secret-demo
+  labels:
+    app.kubernetes.io/name: vault-secret-demo
+    app.kubernetes.io/part-of: devops-lab

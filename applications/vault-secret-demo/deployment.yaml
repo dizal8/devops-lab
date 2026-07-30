@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-secret-demo
+  namespace: secret-demo
+  labels:
+    app.kubernetes.io/name: vault-secret-demo
+    app.kubernetes.io/part-of: devops-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vault-secret-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vault-secret-demo
+        app.kubernetes.io/part-of: devops-lab
+    spec:
+      containers:
+        - name: demo
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              test -n "${API_KEY}"
+              test "${ENVIRONMENT}" = "lab01"
+              echo "Vault secret loaded successfully."
+              while true; do
+                sleep 3600
+              done
+          env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vault-demo-secret
+                  key: API_KEY
+            - name: ENVIRONMENT
+              valueFrom:
+                secretKeyRef:
+                  name: vault-demo-secret
+                  key: ENVIRONMENT
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - test -n "${API_KEY}" && test "${ENVIRONMENT}" = "lab01"
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - test -n "${API_KEY}"
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
