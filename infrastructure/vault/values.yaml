@@ -58,3 +58,8 @@ server:
   livenessProbe:
     enabled: true
     path: "/v1/sys/health?standbyok=true&perfstandbyok=true&sealedcode=204&uninitcode=204"
+    initialDelaySeconds: 60
+
+ui:
+  enabled: true
+  serviceType: ClusterIP
