@@ -54,11 +54,26 @@ server:
 
   readinessProbe:
     enabled: true
+    failureThreshold: 2
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
 
   livenessProbe:
     enabled: true
-    path: "/v1/sys/health?standbyok=true&perfstandbyok=true&sealedcode=204&uninitcode=204"
-    initialDelaySeconds: 60
+    execCommand:
+      - /bin/sh
+      - -ec
+      - |
+        vault status >/dev/null 2>&1
+        rc=$?
+        [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ]
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
 
 ui:
   enabled: true
