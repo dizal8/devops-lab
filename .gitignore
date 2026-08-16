@@ -19,3 +19,4 @@ terraform/first-lab/interview-lab.txt
 logs/
 ai-platform-operator/reports/*.md
 ai-platform-operator/state/*
+!ai-platform-operator/state/.gitkeep
