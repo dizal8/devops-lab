@@ -1,0 +1,71 @@
+version: 1
+
+mode: pull-request-only
+
+risk:
+  green:
+    automatic: true
+    actions:
+      - inspect_repository
+      - inspect_cluster_readonly
+      - create_branch
+      - edit_repository_files
+      - run_tests
+      - helm_template
+      - kubectl_dry_run
+      - kustomize_build
+      - git_diff
+      - git_commit
+      - push_feature_branch
+
+  yellow:
+    automatic: false
+    requires_human_approval: true
+    actions:
+      - helm_chart_upgrade
+      - terraform_change
+      - vault_policy_change
+      - rbac_change
+      - network_policy_change
+      - resource_limit_change
+      - rollout_change
+
+  red:
+    automatic: false
+    requires_human_approval: true
+    actions:
+      - merge_main
+      - kubectl_apply_live
+      - kubectl_delete
+      - helm_uninstall
+      - delete_namespace
+      - delete_pvc
+      - rotate_secrets
+      - modify_firewall
+      - modify_router
+      - expose_public_service
+      - vault_init
+      - reveal_unseal_material
+
+git:
+  protected_branches:
+    - main
+
+  ai_branch_prefix: ai/
+
+  direct_push_to_main: false
+
+  require_clean_worktree: true
+
+cluster:
+  default_access: readonly
+  allow_live_mutation: false
+
+secrets:
+  never_print:
+    - root_token
+    - unseal_key
+    - api_key
+    - password
+    - private_key
+    - kubeconfig
