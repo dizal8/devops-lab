@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-set -uo pipefail
+set -euo pipefail
 
 REPO="${HOME}/devops-lab"
 PROMPT_FILE="${REPO}/ai-platform-operator/prompts/audit.md"
 REPORT_DIR="${REPO}/ai-platform-operator/reports"
 LOG_DIR="${REPO}/logs"
 
-mkdir -p "$REPORT_DIR" "$LOG_DIR"
+cd "$REPO"
 
-cd "$REPO" || exit 1
+mkdir -p "$REPORT_DIR" "$LOG_DIR"
 
 timestamp="$(date +%Y%m%d-%H%M%S)"
 
@@ -18,68 +18,67 @@ LOG_FILE="${LOG_DIR}/ai-audit-${timestamp}.log"
 
 echo "===== PREFLIGHT ====="
 
-command -v codex >/dev/null 2>&1 || {
-  echo "[ERROR] Codex nu este instalat."
-  exit 1
-}
+for cmd in codex git; do
+  command -v "$cmd" >/dev/null 2>&1 || {
+    echo "[ERROR] Lipsește: $cmd"
+    exit 1
+  }
+done
 
 test -s "$PROMPT_FILE" || {
-  echo "[ERROR] Promptul de audit lipsește."
+  echo "[ERROR] Lipsește promptul: $PROMPT_FILE"
   exit 1
 }
 
-codex login status || {
-  echo "[ERROR] Codex nu este autentificat."
-  exit 1
-}
+codex login status
 
 echo
-echo "===== GIT BEFORE ====="
+echo "===== BASELINE REPOSITORY ====="
 
-BEFORE_STATUS="$(git status --porcelain)"
+#
+# Ignorăm artefactele generate de operator.
+#
+git status --porcelain \
+  --untracked-files=all \
+  -- \
+  . \
+  ':(exclude)ai-platform-operator/reports/**' \
+  ':(exclude)logs/**' \
+  > /tmp/ai-before-status
 
-git status --short
+cat /tmp/ai-before-status || true
 
 echo
 echo "===== CODEX READ-ONLY AUDIT ====="
-
-PROMPT="$(cat "$PROMPT_FILE")"
 
 codex exec \
   --ephemeral \
   --sandbox read-only \
   --output-last-message "$REPORT_FILE" \
-  "$PROMPT" \
+  "$(cat "$PROMPT_FILE")" \
   2> >(tee "$LOG_FILE" >&2)
 
-CODEX_STATUS=$?
-
 echo
-echo "===== CODEX EXIT ====="
-echo "$CODEX_STATUS"
+echo "===== VERIFY REPOSITORY ====="
 
-if [ "$CODEX_STATUS" -ne 0 ]; then
-  echo "[ERROR] Codex audit a eșuat."
-  exit "$CODEX_STATUS"
-fi
+git status --porcelain \
+  --untracked-files=all \
+  -- \
+  . \
+  ':(exclude)ai-platform-operator/reports/**' \
+  ':(exclude)logs/**' \
+  > /tmp/ai-after-status
 
-test -s "$REPORT_FILE" || {
-  echo "[ERROR] Raportul Codex este gol."
-  exit 1
-}
-
-echo
-echo "===== VERIFY NO MODIFICATIONS ====="
-
-AFTER_STATUS="$(git status --porcelain)"
-
-if [ "$BEFORE_STATUS" != "$AFTER_STATUS" ]; then
-  echo "[ERROR] Working tree s-a modificat în timpul auditului."
-  git status
+if ! diff -u \
+  /tmp/ai-before-status \
+  /tmp/ai-after-status
+then
+  echo
+  echo "[ERROR] Codex sau alt proces a modificat repository-ul."
   exit 1
 fi
 
-echo "Working tree neschimbat: OK"
+echo "[OK] Repository neschimbat."
 
 echo
 echo "===== REPORT ====="
@@ -87,6 +86,9 @@ echo "===== REPORT ====="
 cat "$REPORT_FILE"
 
 echo
-echo "===== FILES ====="
+echo "===== RESULT ====="
 echo "Report: $REPORT_FILE"
 echo "Log:    $LOG_FILE"
+
+echo
+echo "[OK] Audit read-only finalizat."

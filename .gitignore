@@ -17,3 +17,5 @@ terraform/first-lab/interview-lab.txt
 .idea/
 
 logs/
+ai-platform-operator/reports/*.md
+ai-platform-operator/state/*
