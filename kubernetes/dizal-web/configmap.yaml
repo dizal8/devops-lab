@@ -618,7 +618,55 @@ data:
         border: 0;
         border-radius: 0;
       }
-      </style>
+
+    /* DZL_SESSION_TOOLS_FINAL_CSS */
+
+    .dzl-terminal-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dzl-terminal-session-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .dzl-terminal-toolbar > .dzl-terminal-shortcuts {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      justify-content: flex-end;
+    }
+
+    .dzl-paste-button {
+      border-color: rgba(52, 211, 153, .48);
+    }
+
+    @media (max-width: 720px) {
+      .dzl-terminal-toolbar {
+        overflow-x: auto;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .dzl-terminal-session-actions,
+      .dzl-terminal-toolbar > .dzl-terminal-shortcuts {
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+      }
+
+      .dzl-terminal-shortcut {
+        min-height: 38px;
+        padding: 8px 10px;
+        white-space: nowrap;
+      }
+    }
+
+    </style>
     </head>
 
     <body>
@@ -1135,73 +1183,27 @@ data:
           </div>
         </div>
 
-        <div class="dzl-terminal-toolbar">
+            <div class="dzl-terminal-toolbar">
+          <!-- DZL_SESSION_TOOLS_FINAL -->
+
+          <div class="dzl-terminal-session-actions">
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlClearTerminal()">Clear</button>
+            <button class="dzl-terminal-shortcut dzl-paste-button" type="button" onclick="dzlPasteTerminal()">Paste</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyLast(false)">Copy</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyLast(true)">Copy MD</button>
+          </div>
 
           <div class="dzl-terminal-shortcuts">
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'cd ~/devops-lab && git status --short'
-              )"
-            >
-              Git
-            </button>
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'kubectl get pods -A'
-              )"
-            >
-              Pods
-            </button>
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'kubectl get applications -n argocd'
-              )"
-            >
-              Argo
-            </button>
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'kubectl get pod vault-0 -n vault'
-              )"
-            >
-              Vault
-            </button>
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'kubectl get externalsecret -A'
-              )"
-            >
-              ESO
-            </button>
-
-            <button
-              class="dzl-terminal-shortcut"
-              onclick="dzlCopyCommand(
-                'bash scripts/ai-readonly-audit.sh'
-              )"
-            >
-              AI Audit
-            </button>
-
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('cd ~/devops-lab && git status --short')">Git</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get pods -A')">Pods</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get applications -n argocd')">Argo</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get pod vault-0 -n vault')">Vault</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get externalsecret -A')">ESO</button>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('bash scripts/ai-readonly-audit.sh')">AI Audit</button>
           </div>
-
-          <div class="dzl-terminal-hint">
-            Commands copy to clipboard · shell stays private
-          </div>
-
         </div>
 
-        <div class="dzl-terminal-frame-wrap">
+    <div class="dzl-terminal-frame-wrap">
 
           <iframe
             id="dzl-terminal-frame"
@@ -1490,6 +1492,102 @@ data:
       );
 
     })();
+
+          // DZL_SESSION_TOOLS_FINAL_JS
+
+          const DZL_SESSION_API =
+            "https://dzl.tail52c2d4.ts.net:8444";
+
+          async function dzlSessionRequest(path, options) {
+            const response = await fetch(
+              DZL_SESSION_API + path,
+              Object.assign(
+                { cache: "no-store" },
+                options || {}
+              )
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                "Session API HTTP " + response.status
+              );
+            }
+
+            return response.text();
+          }
+
+          window.dzlClearTerminal = async function () {
+            try {
+              await dzlSessionRequest(
+                "/clear",
+                { method: "POST" }
+              );
+
+              toast("Terminal cleared");
+            } catch (error) {
+              console.error(error);
+              toast("Clear unavailable");
+            }
+          };
+
+          window.dzlPasteTerminal = async function () {
+            try {
+              const value =
+                await navigator.clipboard.readText();
+
+              if (!value) {
+                toast("Clipboard empty");
+                return;
+              }
+
+              await dzlSessionRequest(
+                "/paste",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    text: value
+                  })
+                }
+              );
+
+              toast("Pasted into terminal");
+
+              const terminalFrame = frame();
+
+              if (terminalFrame) {
+                terminalFrame.focus();
+              }
+
+            } catch (error) {
+              console.error(error);
+              toast("Clipboard permission denied");
+            }
+          };
+
+          window.dzlCopyLast = async function (markdown) {
+            try {
+              const value =
+                await dzlSessionRequest(
+                  markdown ? "/last-md" : "/last"
+                );
+
+              await navigator.clipboard.writeText(value);
+
+              toast(
+                markdown
+                  ? "Copied as Markdown"
+                  : "Copied"
+              );
+
+            } catch (error) {
+              console.error(error);
+              toast("Copy unavailable");
+            }
+          };
+
     </script>
     </body>
     </html>

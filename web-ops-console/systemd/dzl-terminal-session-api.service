@@ -1,0 +1,26 @@
+[Unit]
+Description=DZL Terminal Session API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=dizal
+Group=dizal
+
+WorkingDirectory=/home/dizal/devops-lab
+
+Environment=LANG=en_US.UTF-8
+Environment=LC_ALL=en_US.UTF-8
+
+ExecStart=/usr/bin/python3 /home/dizal/devops-lab/web-ops-console/session-api/session_api.py
+
+Restart=always
+RestartSec=2
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
