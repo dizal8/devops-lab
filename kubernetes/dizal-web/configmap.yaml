@@ -1684,7 +1684,7 @@ data:
             };
 
     
-        window.dzlAiHealth=async function(){
+            window.dzlAiHealth=async function(){
       const e=document.getElementById("dzl-ai-status");
       try{
         const r=await fetch("https://dzl.tail52c2d4.ts.net:8446/health");
@@ -1692,6 +1692,8 @@ data:
         e.textContent=d.key?"Online":"Online · API key missing";
       }catch(x){e.textContent="Offline";}
     };
+
+    dzlAiHealth();
 
     </script>
     </body>
