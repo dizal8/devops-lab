@@ -1246,7 +1246,9 @@ data:
 
         <aside style="border:1px solid #263a58;border-radius:8px;background:#091424;padding:12px;overflow:auto;color:#e8f1ff">
           <strong>DZL AI Copilot</strong>
-          <p style="color:#8194aa;font-size:12px">AI panel placeholder</p>
+          <p id="dzl-ai-status" style="color:#8194aa;font-size:12px">Checking...</p>
+          <button onclick="dzlAiHealth()">Refresh AI</button>
+          <button onclick="dzlAskLastOutput()">Ask last output</button>
         </aside>
       </div>
 
@@ -1680,6 +1682,16 @@ data:
                 );
               }
             };
+
+    
+        window.dzlAiHealth=async function(){
+      const e=document.getElementById("dzl-ai-status");
+      try{
+        const r=await fetch("https://dzl.tail52c2d4.ts.net:8446/health");
+        const d=await r.json();
+        e.textContent=d.key?"Online":"Online · API key missing";
+      }catch(x){e.textContent="Offline";}
+    };
 
     </script>
     </body>
