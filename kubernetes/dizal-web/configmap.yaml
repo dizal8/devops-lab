@@ -1182,14 +1182,6 @@ data:
             <button
               class="dzl-terminal-control"
               type="button"
-              onclick="dzlTerminalFullscreen()"
-            >
-              Fullscreen
-            </button>
-
-            <button
-              class="dzl-terminal-control"
-              type="button"
               onclick="dzlOpenTerminalSeparate()"
             >
               ↗
@@ -1244,11 +1236,45 @@ data:
 
         </div>
 
-        <aside style="border:1px solid #263a58;border-radius:8px;background:#091424;padding:12px;overflow:auto;color:#e8f1ff">
-          <strong>DZL AI Copilot</strong>
-          <p id="dzl-ai-status" style="color:#8194aa;font-size:12px">Checking...</p>
-          <button onclick="dzlAiHealth()">Refresh AI</button>
-          <button onclick="dzlAskLastOutput()">Ask last output</button>
+        <aside id="dzl-ai-workspace" style="border:1px solid #263a58;border-radius:8px;background:#091424;padding:12px;overflow:hidden;color:#e8f1ff;display:flex;flex-direction:column;min-height:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+            <div>
+              <strong>DZL AI Workspace</strong>
+              <div id="dzl-ai-status" style="color:#8194aa;font-size:11px;margin-top:3px">Checking local AI...</div>
+            </div>
+            <button class="dzl-terminal-shortcut" type="button" onclick="dzlAiHealth()">Refresh</button>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+            <span id="dzl-ai-provider" style="font-size:11px;border:1px solid #23476d;border-radius:999px;padding:3px 7px">OLLAMA</span>
+            <span id="dzl-ai-model" style="font-size:11px;border:1px solid #23476d;border-radius:999px;padding:3px 7px">qwen3:8b</span>
+            <span id="dzl-ai-gpu" style="font-size:11px;border:1px solid #23476d;border-radius:999px;padding:3px 7px">GPU …</span>
+            <span style="font-size:11px;border:1px solid #236b52;border-radius:999px;padding:3px 7px;color:#86efac">LOCAL · PRIVATE</span>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+            <button class="dzl-terminal-shortcut" onclick="dzlAiNewChat()">Local AI</button>
+            <button class="dzl-terminal-shortcut" onclick="dzlCopyCommand('cd ~/devops-lab && openclaude --provider ollama')">OpenClaude</button>
+            <button class="dzl-terminal-shortcut" onclick="window.open('https://chatgpt.com','_blank')">ChatGPT ↗</button>
+            <button class="dzl-terminal-shortcut" onclick="window.open('https://claude.ai','_blank')">Claude ↗</button>
+            <button class="dzl-terminal-shortcut" onclick="window.open('https://gemini.google.com','_blank')">Gemini ↗</button>
+          </div>
+
+          <div id="dzl-ai-chat" style="flex:1;min-height:120px;overflow:auto;border:1px solid #172b45;border-radius:7px;background:#050d18;padding:9px;font-size:12px;white-space:pre-wrap;margin-bottom:8px">
+            <div style="color:#8194aa">DZL Local AI ready.</div>
+          </div>
+
+          <textarea
+            id="dzl-ai-input"
+            placeholder="Ask qwen3:8b..."
+            onkeydown="dzlAiKeydown(event)"
+            style="box-sizing:border-box;width:100%;min-height:62px;resize:vertical;background:#07111f;color:#e8f1ff;border:1px solid #263a58;border-radius:7px;padding:8px;margin-bottom:7px"
+          ></textarea>
+
+          <div style="display:flex;gap:6px">
+            <button class="dzl-terminal-shortcut" style="flex:1" onclick="dzlAiSend()">Send</button>
+            <button class="dzl-terminal-shortcut" style="flex:1" onclick="dzlAskLastOutput()">Ask terminal</button>
+          </div>
         </aside>
       </div>
 
@@ -1684,16 +1710,117 @@ data:
             };
 
     
-            window.dzlAiHealth=async function(){
-      const e=document.getElementById("dzl-ai-status");
-      try{
-        const r=await fetch("https://dzl.tail52c2d4.ts.net:8446/health");
-        const d=await r.json();
-        e.textContent=d.key?"Online":"Online · API key missing";
-      }catch(x){e.textContent="Offline";}
-    };
+            const DZL_AI_URL = "https://dzl.tail52c2d4.ts.net:8446";
+            const DZL_SESSION_URL = "https://dzl.tail52c2d4.ts.net:8444";
 
-    dzlAiHealth();
+            function dzlAiAppend(role, text) {
+              const box = document.getElementById("dzl-ai-chat");
+              if (!box) return;
+              const row = document.createElement("div");
+              row.style.marginBottom = "8px";
+              row.style.color = role === "YOU" ? "#93c5fd" : "#e8f1ff";
+              row.textContent = role + ": " + text;
+              box.appendChild(row);
+              box.scrollTop = box.scrollHeight;
+            }
+
+            window.dzlAiHealth = async function() {
+              const status = document.getElementById("dzl-ai-status");
+              const gpu = document.getElementById("dzl-ai-gpu");
+              try {
+                const [h, r] = await Promise.all([
+                  fetch(DZL_AI_URL + "/health").then(x => x.json()),
+                  fetch(DZL_AI_URL + "/runtime").then(x => x.json())
+                ]);
+                status.textContent =
+                  h.status === "ok"
+                    ? "Online · " + h.model + " · no API cost"
+                    : "Offline";
+
+                const loaded = (r.models || []).find(
+                  x => x.name === h.model || x.model === h.model
+                );
+
+                gpu.textContent = loaded && loaded.size_vram
+                  ? "GPU · " + Math.round(loaded.size_vram / 1024 / 1024) + " MB"
+                  : "GPU · idle";
+              } catch (err) {
+                status.textContent = "Offline";
+                gpu.textContent = "GPU ?";
+              }
+            };
+
+            window.dzlAiSend = async function(message) {
+              const input = document.getElementById("dzl-ai-input");
+              const q = (message || input.value || "").trim();
+              if (!q) return;
+
+              if (!message) input.value = "";
+              dzlAiAppend("YOU", q);
+              dzlAiAppend("AI", "Thinking...");
+
+              const box = document.getElementById("dzl-ai-chat");
+              const pending = box.lastElementChild;
+
+              try {
+                const r = await fetch(DZL_AI_URL + "/chat", {
+                  method: "POST",
+                  headers: {"Content-Type": "application/json"},
+                  body: JSON.stringify({message: q})
+                });
+                const d = await r.json();
+                pending.textContent = "AI: " + (d.answer || d.error || "No response");
+              } catch (err) {
+                pending.textContent = "AI: Request failed";
+              }
+
+              box.scrollTop = box.scrollHeight;
+              dzlAiHealth();
+            };
+
+            window.dzlAskLastOutput = async function() {
+              try {
+                const r = await fetch(DZL_SESSION_URL + "/last");
+                const type = r.headers.get("content-type") || "";
+                let output;
+
+                if (type.includes("application/json")) {
+                  const d = await r.json();
+                  output = d.output || d.text || d.last || JSON.stringify(d);
+                } else {
+                  output = await r.text();
+                }
+
+                output = (output || "").trim();
+
+                if (!output) {
+                  dzlAiAppend("AI", "No terminal output available.");
+                  return;
+                }
+
+              dzlAiSend(
+                "Analyze this terminal output. Explain the problem, risks, and next safe command.\\n\\n" +
+                output.slice(-12000)
+              );
+              } catch (err) {
+                dzlAiAppend("AI", "Could not read terminal output.");
+              }
+            };
+
+            window.dzlAiKeydown = function(event) {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                dzlAiSend();
+              }
+            };
+
+            window.dzlAiNewChat = function() {
+              const box = document.getElementById("dzl-ai-chat");
+              if (box) box.innerHTML =
+                '<div style="color:#8194aa">New local AI session.</div>';
+            };
+
+            dzlAiHealth();
 
     </script>
     </body>
