@@ -311,6 +311,313 @@ data:
           }
         }
 
+      /* DZL_TERMINAL_INTEGRATION_V1 */
+
+      .dzl-terminal-action {
+        appearance: none;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .dzl-terminal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99990;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        padding: 3vh 3vw;
+
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(30, 64, 175, .14),
+            transparent 40%
+          ),
+          rgba(2, 8, 23, .88);
+
+        backdrop-filter: blur(8px);
+      }
+
+      .dzl-terminal-overlay.open {
+        display: flex;
+      }
+
+      .dzl-terminal-window {
+        width: min(1500px, 94vw);
+        height: min(900px, 88vh);
+
+        display: flex;
+        flex-direction: column;
+
+        overflow: hidden;
+
+        border:
+          1px solid rgba(96, 165, 250, .28);
+
+        border-radius: 16px;
+
+        background: #080d14;
+
+        box-shadow:
+          0 30px 90px rgba(0, 0, 0, .60),
+          0 0 45px rgba(59, 130, 246, .08);
+      }
+
+      .dzl-terminal-window.expanded {
+        width: 98vw;
+        height: 96vh;
+      }
+
+      .dzl-terminal-header {
+        min-height: 54px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 12px;
+
+        padding: 9px 12px;
+
+        border-bottom:
+          1px solid rgba(148, 163, 184, .16);
+
+        background: #0d1726;
+      }
+
+      .dzl-terminal-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        min-width: 0;
+
+        color: #e5efff;
+        font-weight: 700;
+      }
+
+      .dzl-terminal-title-icon {
+        color: #67e8f9;
+        font-family: monospace;
+        font-weight: 900;
+      }
+
+      .dzl-private-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 4px 8px;
+
+        border:
+          1px solid rgba(52, 211, 153, .28);
+
+        border-radius: 999px;
+
+        background:
+          rgba(16, 185, 129, .10);
+
+        color: #6ee7b7;
+
+        font-size: 10px;
+        font-weight: 800;
+
+        white-space: nowrap;
+      }
+
+      .dzl-terminal-controls,
+      .dzl-terminal-shortcuts {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .dzl-terminal-control,
+      .dzl-terminal-shortcut {
+        appearance: none;
+
+        border:
+          1px solid rgba(148, 163, 184, .20);
+
+        border-radius: 8px;
+
+        background: #142033;
+        color: #dbeafe;
+
+        padding: 7px 10px;
+
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+
+        cursor: pointer;
+      }
+
+      .dzl-terminal-control:hover,
+      .dzl-terminal-shortcut:hover {
+        border-color: #60a5fa;
+        background: #172b46;
+      }
+
+      .dzl-terminal-control.danger:hover {
+        border-color: #fb7185;
+      }
+
+      .dzl-terminal-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px;
+
+        padding: 7px 10px;
+
+        border-bottom:
+          1px solid rgba(148, 163, 184, .12);
+
+        background: #0a121e;
+      }
+
+      .dzl-terminal-hint {
+        color: #64748b;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .dzl-terminal-frame-wrap {
+        flex: 1;
+        min-height: 0;
+
+        background: #000;
+      }
+
+      #dzl-terminal-frame {
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        border: 0;
+
+        background: #000;
+      }
+
+      .dzl-terminal-toast {
+        position: fixed;
+
+        left: 50%;
+        bottom: 24px;
+
+        z-index: 100000;
+
+        transform:
+          translate(-50%, 20px);
+
+        opacity: 0;
+        pointer-events: none;
+
+        padding: 9px 13px;
+
+        border:
+          1px solid rgba(96, 165, 250, .28);
+
+        border-radius: 9px;
+
+        background: #0f1b2d;
+        color: #dbeafe;
+
+        font-size: 12px;
+
+        transition:
+          opacity .18s ease,
+          transform .18s ease;
+      }
+
+      .dzl-terminal-toast.visible {
+        opacity: 1;
+
+        transform:
+          translate(-50%, 0);
+      }
+
+      body.dzl-terminal-open {
+        overflow: hidden;
+      }
+
+      @media (max-width: 720px) {
+
+        .dzl-terminal-overlay {
+          padding:
+            max(6px, env(safe-area-inset-top))
+            max(5px, env(safe-area-inset-right))
+            max(6px, env(safe-area-inset-bottom))
+            max(5px, env(safe-area-inset-left));
+        }
+
+        .dzl-terminal-window,
+        .dzl-terminal-window.expanded {
+          width: 97vw;
+          height: 94dvh;
+
+          border-radius: 11px;
+        }
+
+        .dzl-terminal-header {
+          min-height: 48px;
+
+          padding:
+            6px 8px;
+        }
+
+        .dzl-private-pill {
+          display: none;
+        }
+
+        .dzl-terminal-controls {
+          gap: 3px;
+        }
+
+        .dzl-terminal-control {
+          padding: 6px 8px;
+          font-size: 10px;
+        }
+
+        .dzl-terminal-toolbar {
+          overflow-x: auto;
+
+          justify-content:
+            flex-start;
+        }
+
+        .dzl-terminal-shortcuts {
+          flex-wrap: nowrap;
+        }
+
+        .dzl-terminal-shortcut {
+          white-space: nowrap;
+
+          padding: 6px 8px;
+        }
+
+        .dzl-terminal-hint {
+          display: none;
+        }
+      }
+
+      :fullscreen .dzl-terminal-window {
+        width: 100vw;
+        height: 100vh;
+
+        max-width: none;
+        max-height: none;
+
+        border: 0;
+        border-radius: 0;
+      }
       </style>
     </head>
 
@@ -332,6 +639,17 @@ data:
             <a class="quick-action" href="http://prometheus.dzl.ro" target="_blank">Prometheus</a>
             <a class="quick-action" href="https://github.com/dizal8/devops-lab" target="_blank">GitHub</a>
             <a class="quick-action" href="https://github.com/dizal8/devops-lab/actions" target="_blank">Actions</a>
+
+            <button
+              class="quick-action dzl-terminal-action"
+              type="button"
+              onclick="dzlOpenTerminal()"
+            >Terminal</button>
+            <button
+              class="quick-action dzl-terminal-action"
+              type="button"
+              onclick="dzlOpenAIOps()"
+            >AI Ops</button>
           </div>
           <!-- DZL-PORTAL-ENHANCEMENT-END -->
 
@@ -746,5 +1064,432 @@ data:
     setInterval(updateClock,1000);
     </script>
 
+    <!-- DZL_TERMINAL_INTEGRATION_V1 -->
+
+    <div
+      id="dzl-terminal-overlay"
+      class="dzl-terminal-overlay"
+      aria-hidden="true"
+    >
+      <div
+        id="dzl-terminal-window"
+        class="dzl-terminal-window"
+      >
+
+        <div class="dzl-terminal-header">
+
+          <div class="dzl-terminal-title">
+            <span class="dzl-terminal-title-icon">
+              &gt;_
+            </span>
+
+            <span>DZL Terminal</span>
+
+            <span class="dzl-private-pill">
+              ● TAILNET PRIVATE
+            </span>
+          </div>
+
+          <div class="dzl-terminal-controls">
+
+            <button
+              class="dzl-terminal-control"
+              type="button"
+              onclick="dzlReloadTerminal()"
+            >
+              Reconnect
+            </button>
+
+            <button
+              class="dzl-terminal-control"
+              type="button"
+              onclick="dzlToggleTerminalExpand()"
+            >
+              Expand
+            </button>
+
+            <button
+              class="dzl-terminal-control"
+              type="button"
+              onclick="dzlTerminalFullscreen()"
+            >
+              Fullscreen
+            </button>
+
+            <button
+              class="dzl-terminal-control"
+              type="button"
+              onclick="dzlOpenTerminalSeparate()"
+            >
+              ↗
+            </button>
+
+            <button
+              class="dzl-terminal-control danger"
+              type="button"
+              onclick="dzlCloseTerminal()"
+            >
+              ✕
+            </button>
+
+          </div>
+        </div>
+
+        <div class="dzl-terminal-toolbar">
+
+          <div class="dzl-terminal-shortcuts">
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'cd ~/devops-lab && git status --short'
+              )"
+            >
+              Git
+            </button>
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'kubectl get pods -A'
+              )"
+            >
+              Pods
+            </button>
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'kubectl get applications -n argocd'
+              )"
+            >
+              Argo
+            </button>
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'kubectl get pod vault-0 -n vault'
+              )"
+            >
+              Vault
+            </button>
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'kubectl get externalsecret -A'
+              )"
+            >
+              ESO
+            </button>
+
+            <button
+              class="dzl-terminal-shortcut"
+              onclick="dzlCopyCommand(
+                'bash scripts/ai-readonly-audit.sh'
+              )"
+            >
+              AI Audit
+            </button>
+
+          </div>
+
+          <div class="dzl-terminal-hint">
+            Commands copy to clipboard · shell stays private
+          </div>
+
+        </div>
+
+        <div class="dzl-terminal-frame-wrap">
+
+          <iframe
+            id="dzl-terminal-frame"
+            title="DZL private terminal"
+            data-src="https://dzl.tail52c2d4.ts.net:8443/"
+            allow="clipboard-read; clipboard-write; fullscreen"
+          ></iframe>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div
+      id="dzl-terminal-toast"
+      class="dzl-terminal-toast"
+    ></div>
+
+    <script>
+    (function () {
+
+      const TERMINAL_URL =
+        "https://dzl.tail52c2d4.ts.net:8443/";
+
+      function overlay() {
+        return document.getElementById(
+          "dzl-terminal-overlay"
+        );
+      }
+
+      function terminalWindow() {
+        return document.getElementById(
+          "dzl-terminal-window"
+        );
+      }
+
+      function frame() {
+        return document.getElementById(
+          "dzl-terminal-frame"
+        );
+      }
+
+      function toast(message) {
+
+        const element =
+          document.getElementById(
+            "dzl-terminal-toast"
+          );
+
+        if (!element) {
+          return;
+        }
+
+        element.textContent = message;
+
+        element.classList.add(
+          "visible"
+        );
+
+        clearTimeout(
+          window.dzlToastTimer
+        );
+
+        window.dzlToastTimer =
+          setTimeout(
+            function () {
+              element.classList.remove(
+                "visible"
+              );
+            },
+            1800
+          );
+      }
+
+
+      window.dzlOpenTerminal =
+        function () {
+
+          const terminalOverlay =
+            overlay();
+
+          const terminalFrame =
+            frame();
+
+          if (!terminalOverlay ||
+              !terminalFrame) {
+            return;
+          }
+
+          if (!terminalFrame.src) {
+            terminalFrame.src =
+              terminalFrame.dataset.src
+              || TERMINAL_URL;
+          }
+
+          terminalOverlay.classList.add(
+            "open"
+          );
+
+          terminalOverlay.setAttribute(
+            "aria-hidden",
+            "false"
+          );
+
+          document.body.classList.add(
+            "dzl-terminal-open"
+          );
+        };
+
+
+      window.dzlCloseTerminal =
+        function () {
+
+          const terminalOverlay =
+            overlay();
+
+          if (!terminalOverlay) {
+            return;
+          }
+
+          terminalOverlay.classList.remove(
+            "open"
+          );
+
+          terminalOverlay.setAttribute(
+            "aria-hidden",
+            "true"
+          );
+
+          document.body.classList.remove(
+            "dzl-terminal-open"
+          );
+        };
+
+
+      window.dzlReloadTerminal =
+        function () {
+
+          const terminalFrame =
+            frame();
+
+          if (!terminalFrame) {
+            return;
+          }
+
+          terminalFrame.src =
+            TERMINAL_URL
+            + "?reconnect="
+            + Date.now();
+
+          toast(
+            "Terminal reconnected"
+          );
+        };
+
+
+      window.dzlToggleTerminalExpand =
+        function () {
+
+          const element =
+            terminalWindow();
+
+          if (!element) {
+            return;
+          }
+
+          element.classList.toggle(
+            "expanded"
+          );
+        };
+
+
+      window.dzlTerminalFullscreen =
+        async function () {
+
+          const element =
+            terminalWindow();
+
+          if (!element) {
+            return;
+          }
+
+          try {
+
+            if (!document.fullscreenElement) {
+              await element.requestFullscreen();
+            } else {
+              await document.exitFullscreen();
+            }
+
+          } catch (error) {
+
+            console.error(error);
+
+            toast(
+              "Fullscreen unavailable"
+            );
+          }
+        };
+
+
+      window.dzlOpenTerminalSeparate =
+        function () {
+
+          window.open(
+            TERMINAL_URL,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        };
+
+
+      window.dzlCopyCommand =
+        async function (command) {
+
+          try {
+
+            await navigator.clipboard.writeText(
+              command
+            );
+
+            toast(
+              "Command copied"
+            );
+
+          } catch (error) {
+
+            console.error(error);
+
+            toast(
+              command
+            );
+          }
+        };
+
+
+      window.dzlOpenAIOps =
+        async function () {
+
+          const command =
+            "bash scripts/ai-readonly-audit.sh";
+
+          try {
+
+            await navigator.clipboard.writeText(
+              command
+            );
+
+          } catch (_) {
+          }
+
+          window.dzlOpenTerminal();
+
+          toast(
+            "AI Audit command copied"
+          );
+        };
+
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+
+          if (event.key === "Escape") {
+            window.dzlCloseTerminal();
+          }
+
+        }
+      );
+
+
+      document.addEventListener(
+        "click",
+        function (event) {
+
+          const terminalOverlay =
+            overlay();
+
+          if (event.target ===
+              terminalOverlay) {
+
+            window.dzlCloseTerminal();
+          }
+
+        }
+      );
+
+    })();
+    </script>
     </body>
     </html>
