@@ -1232,6 +1232,7 @@ data:
           </div>
         </div>
 
+    <div id="dzl-terminal-split" style="display:grid;grid-template-columns:minmax(0,3fr) minmax(320px,2fr);gap:10px;flex:1;min-height:0;padding:0 8px 8px">
     <div class="dzl-terminal-frame-wrap">
 
           <iframe
@@ -1242,6 +1243,12 @@ data:
           ></iframe>
 
         </div>
+
+        <aside style="border:1px solid #263a58;border-radius:8px;background:#091424;padding:12px;overflow:auto;color:#e8f1ff">
+          <strong>DZL AI Copilot</strong>
+          <p style="color:#8194aa;font-size:12px">AI panel placeholder</p>
+        </aside>
+      </div>
 
       </div>
     </div>
