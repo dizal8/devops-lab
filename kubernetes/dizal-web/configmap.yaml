@@ -666,6 +666,29 @@ data:
       }
     }
 
+
+    /* DZL_RUN_BUTTON_FINAL_CSS */
+
+    .dzl-run-button {
+      border-color:
+        rgba(96, 165, 250, .60);
+
+      background:
+        rgba(30, 64, 110, .58);
+    }
+
+    .dzl-run-button:hover {
+      background:
+        rgba(37, 79, 135, .78);
+    }
+
+    @media (max-width: 720px) {
+      .dzl-run-button {
+        min-width: 54px;
+        min-height: 38px;
+      }
+    }
+
     </style>
     </head>
 
@@ -1189,6 +1212,12 @@ data:
           <div class="dzl-terminal-session-actions">
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlClearTerminal()">Clear</button>
             <button class="dzl-terminal-shortcut dzl-paste-button" type="button" onclick="dzlPasteTerminal()">Paste</button>
+                <!-- DZL_RUN_BUTTON_FINAL -->
+                <button
+                  class="dzl-terminal-shortcut dzl-run-button"
+                  type="button"
+                  onclick="dzlRunTerminal()"
+                >Run</button>
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyLast(false)">Copy</button>
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyLast(true)">Copy MD</button>
           </div>
@@ -1587,6 +1616,63 @@ data:
               toast("Copy unavailable");
             }
           };
+
+
+          // DZL_RUN_BUTTON_FINAL_JS
+
+          let dzlRunBusy = false;
+
+          window.dzlRunTerminal =
+            async function () {
+
+              if (dzlRunBusy) {
+                return;
+              }
+
+              dzlRunBusy = true;
+
+              try {
+
+                const result =
+                  await dzlSessionRequest(
+                    "/enter",
+                    {
+                      method: "POST",
+                    }
+                  );
+
+                if (
+                  result !== "executed"
+                ) {
+
+                  console.warn(
+                    "Unexpected /enter response:",
+                    result
+                  );
+                }
+
+                toast(
+                  "Executed"
+                );
+
+              } catch (error) {
+
+                console.error(error);
+
+                toast(
+                  "Run unavailable"
+                );
+
+              } finally {
+
+                setTimeout(
+                  function () {
+                    dzlRunBusy = false;
+                  },
+                  450
+                );
+              }
+            };
 
     </script>
     </body>
