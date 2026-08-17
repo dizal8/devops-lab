@@ -705,7 +705,7 @@ data:
 
           <!-- DZL-PORTAL-ENHANCEMENT-START -->
           <div class="quick-actions">
-            <a class="quick-action" href="http://grafana.dzl.ro" target="_blank">Grafana</a>
+            <a class="quick-action" href="https://grafana.lab01.dzl.ro" target="_blank">Grafana</a>
             <a class="quick-action" href="http://argocd.dzl.ro" target="_blank">Argo CD</a>
             <a class="quick-action" href="http://prometheus.dzl.ro" target="_blank">Prometheus</a>
             <a class="quick-action" href="https://github.com/dizal8/devops-lab" target="_blank">GitHub</a>
@@ -798,7 +798,7 @@ data:
             <span class="status">SYNCED</span>
           </a>
 
-          <a class="card link" href="http://grafana.dzl.ro" target="_blank">
+          <a class="card link" href="https://grafana.lab01.dzl.ro" target="_blank">
             <h2>Grafana</h2>
             <p>Dashboards for cluster CPU, memory, workloads and infrastructure.</p>
             <span class="status">MONITORING</span>
@@ -810,7 +810,7 @@ data:
             <span class="status">COLLECTING</span>
           </a>
 
-          <a class="card link" href="http://grafana.dzl.ro/explore" target="_blank">
+          <a class="card link" href="https://grafana.lab01.dzl.ro/explore" target="_blank">
             <h2>Loki & Alloy</h2>
             <p>Centralized Kubernetes logs collected and queried through Grafana.</p>
             <span class="status">STREAMING</span>
@@ -907,7 +907,7 @@ data:
         <div class="footer-links">
           <a href="https://github.com/dizal8/devops-lab" target="_blank">GitHub Repository</a>
           <a href="https://github.com/dizal8/devops-lab/actions" target="_blank">CI Workflows</a>
-          <a href="http://grafana.dzl.ro" target="_blank">Grafana</a>
+          <a href="https://grafana.lab01.dzl.ro" target="_blank">Grafana</a>
           <a href="http://argocd.dzl.ro" target="_blank">Argo CD</a>
         </div>
       </footer>
@@ -915,15 +915,15 @@ data:
       <script>
         const platforms = {
           "Linux Infrastructure": {
-            link: "http://grafana.dzl.ro/dashboards",
-            health: "http://grafana.dzl.ro/api/health"
+            link: "https://grafana.lab01.dzl.ro/dashboards",
+            health: "https://grafana.lab01.dzl.ro/api/health"
           },
           "Docker": {
             link: "https://github.com/dizal8/devops-lab/tree/main/docker",
             health: "http://dzl.ro"
           },
           "Kubernetes": {
-            link: "http://grafana.dzl.ro/dashboards",
+            link: "https://grafana.lab01.dzl.ro/dashboards",
             health: "http://dzl.ro"
           },
           "Terraform": {
@@ -941,16 +941,16 @@ data:
             health: "http://argocd.dzl.ro"
           },
           "Grafana": {
-            link: "http://grafana.dzl.ro",
-            health: "http://grafana.dzl.ro/api/health"
+            link: "https://grafana.lab01.dzl.ro",
+            health: "https://grafana.lab01.dzl.ro/api/health"
           },
           "Prometheus": {
             link: "http://prometheus.dzl.ro",
             health: "http://prometheus.dzl.ro/-/ready"
           },
           "Loki & Alloy": {
-            link: "http://grafana.dzl.ro/explore",
-            health: "http://grafana.dzl.ro/api/health"
+            link: "https://grafana.lab01.dzl.ro/explore",
+            health: "https://grafana.lab01.dzl.ro/api/health"
           },
           "Trivy": {
             link: "https://github.com/dizal8/devops-lab/actions"
