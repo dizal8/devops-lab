@@ -346,8 +346,8 @@ data:
       }
 
       .dzl-terminal-window {
-        width: min(1500px, 94vw);
-        height: min(900px, 88vh);
+        width: min(2000px, 96vw);
+        height: 94vh;
 
         display: flex;
         flex-direction: column;
@@ -367,8 +367,8 @@ data:
       }
 
       .dzl-terminal-window.expanded {
-        width: 98vw;
-        height: 96vh;
+        width: 99vw;
+        height: 98vh;
       }
 
       .dzl-terminal-header {
@@ -688,6 +688,581 @@ data:
         min-height: 38px;
       }
     }
+
+
+
+      /* DZL_CONSOLE_V8 */
+
+      .dzl-terminal-split {
+        --dzl-terminal-pane: 55%;
+        display: grid;
+        grid-template-columns:
+          minmax(0, var(--dzl-terminal-pane))
+          8px
+          minmax(320px, 1fr);
+        flex: 1;
+        min-height: 0;
+        gap: 6px;
+        padding: 0 8px 8px;
+      }
+
+      .dzl-ai-workspace {
+        border: 1px solid #263a58;
+        border-radius: 8px;
+        background: #091424;
+        padding: 12px;
+        overflow: hidden;
+        color: #e8f1ff;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .dzl-split-handle {
+        cursor: col-resize;
+        border-radius: 999px;
+        position: relative;
+        touch-action: none;
+      }
+
+      .dzl-split-handle::after {
+        content: "";
+        position: absolute;
+        inset: 12px 2px;
+        border-radius: 999px;
+        background: rgba(96,165,250,.24);
+        transition: background .15s ease;
+      }
+
+      .dzl-split-handle:hover::after,
+      .dzl-split-handle.dragging::after {
+        background: rgba(96,165,250,.75);
+      }
+
+      .dzl-ai-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+
+      .dzl-ai-tab,
+      .dzl-mobile-workspace-tab {
+        appearance: none;
+        border: 1px solid #263a58;
+        background: #101d31;
+        color: #b8c9e3;
+        border-radius: 8px;
+        padding: 7px 10px;
+        white-space: nowrap;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .dzl-ai-tab.active,
+      .dzl-mobile-workspace-tab.active {
+        color: #eff6ff;
+        border-color: #60a5fa;
+        background: #17345a;
+      }
+
+      .dzl-ai-panel {
+        display: none;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        flex-direction: column;
+      }
+
+      .dzl-ai-panel.active {
+        display: flex;
+      }
+
+      .dzl-agent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+      }
+
+      .dzl-agent-name {
+        color: #f1f5f9;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .dzl-agent-meta,
+      .dzl-agent-muted {
+        margin-top: 4px;
+        color: #8194aa;
+        font-size: 11px;
+      }
+
+      .dzl-agent-mode {
+        border: 1px solid rgba(52,211,153,.35);
+        background: rgba(16,185,129,.12);
+        color: #6ee7b7;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .dzl-agent-context {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+        color: #a9bddb;
+        font-size: 10px;
+      }
+
+      .dzl-agent-context span {
+        border: 1px solid #233a59;
+        background: #0b1829;
+        border-radius: 999px;
+        padding: 4px 7px;
+      }
+
+      .dzl-agent-card {
+        border: 1px solid #1d324d;
+        background: #07111f;
+        border-radius: 8px;
+        padding: 11px;
+        margin-bottom: 8px;
+        color: #c9d7eb;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .dzl-agent-card strong {
+        color: #eff6ff;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .dzl-agent-card-grow {
+        flex: 1;
+        min-height: 100px;
+      }
+
+      .dzl-browser-placeholder {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        border: 1px dashed #263a58;
+        border-radius: 10px;
+        color: #8194aa;
+        padding: 24px;
+      }
+
+      .dzl-browser-placeholder strong {
+        color: #e8f1ff;
+        font-size: 14px;
+      }
+
+      .dzl-mobile-workspace-tabs {
+        display: none;
+        padding: 7px 8px;
+        gap: 6px;
+        background: #08111d;
+        border-bottom: 1px solid rgba(148,163,184,.12);
+      }
+
+      .dzl-split-presets {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      @media (max-width: 900px) {
+
+        .dzl-terminal-overlay {
+          padding: 0;
+          align-items: stretch;
+          justify-content: stretch;
+        }
+
+        .dzl-terminal-window,
+        .dzl-terminal-window.expanded {
+          width: 100vw;
+          height: 100dvh;
+          max-width: none;
+          border-radius: 0;
+        }
+
+        .dzl-terminal-header {
+          min-height: 48px;
+        }
+
+        .dzl-private-pill {
+          display: none;
+        }
+
+        .dzl-mobile-workspace-tabs {
+          display: flex;
+        }
+
+        .dzl-terminal-split {
+          display: block;
+          padding: 0;
+          position: relative;
+        }
+
+        .dzl-terminal-frame-wrap,
+        .dzl-ai-workspace {
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          border-radius: 0;
+        }
+
+        .dzl-ai-workspace {
+          display: none;
+          border: 0;
+        }
+
+        .dzl-terminal-split.mobile-ai .dzl-terminal-frame-wrap {
+          display: none;
+        }
+
+        .dzl-terminal-split.mobile-ai .dzl-ai-workspace {
+          display: flex;
+        }
+
+        .dzl-split-handle {
+          display: none;
+        }
+
+        .dzl-terminal-hint {
+          display: none;
+        }
+      }
+
+      @media (max-width: 560px) {
+
+        .dzl-terminal-header {
+          padding: 7px;
+        }
+
+        .dzl-terminal-toolbar {
+          overflow-x: auto;
+          align-items: flex-start;
+        }
+
+        .dzl-terminal-session-actions,
+        .dzl-terminal-shortcuts {
+          flex-wrap: nowrap;
+        }
+
+        .dzl-ai-workspace {
+          padding: 9px;
+        }
+
+        .dzl-ai-tabs {
+          margin-bottom: 7px;
+        }
+      }
+
+      /* DZL_AGENT_UI_V81 */
+
+      .dzl-agent-live-header {
+        gap: 12px;
+      }
+
+      .dzl-agent-header-status {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .dzl-agent-state {
+        display: inline-flex;
+        align-items: center;
+        min-height: 22px;
+        padding: 2px 8px;
+        border: 1px solid #334155;
+        border-radius: 999px;
+        background: #0b1524;
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .05em;
+      }
+
+      .dzl-agent-state[data-state="READY"] {
+        border-color: #176b4e;
+        background: #08251c;
+        color: #86efac;
+      }
+
+      .dzl-agent-state[data-state="BUSY"] {
+        border-color: #245d95;
+        background: #081d32;
+        color: #93c5fd;
+      }
+
+      .dzl-agent-state[data-state="WAITING_APPROVAL"] {
+        border-color: #9a6b16;
+        background: #2b1c04;
+        color: #fde68a;
+      }
+
+      .dzl-agent-state[data-state="ERROR"] {
+        border-color: #8b2635;
+        background: #2b0b11;
+        color: #fca5a5;
+      }
+
+      .dzl-agent-task-card {
+        flex: 0 0 auto;
+      }
+
+      .dzl-agent-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .dzl-agent-input {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        min-height: 88px;
+        max-height: 220px;
+        resize: vertical;
+        padding: 9px 10px;
+        border: 1px solid #263a58;
+        border-radius: 7px;
+        outline: none;
+        background: #07111f;
+        color: #e8f1ff;
+        font: inherit;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .dzl-agent-input:focus {
+        border-color: #3b82f6;
+      }
+
+      .dzl-agent-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .dzl-agent-button {
+        min-height: 31px;
+        padding: 5px 10px;
+        border: 1px solid #263a58;
+        border-radius: 6px;
+        background: #0b1728;
+        color: #dbeafe;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .dzl-agent-button:hover:not(:disabled) {
+        background: #13233a;
+      }
+
+      .dzl-agent-button:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+      }
+
+      .dzl-agent-button-primary {
+        border-color: #1d64a6;
+        background: #0c3157;
+        color: #dbeafe;
+      }
+
+      .dzl-agent-button-danger {
+        border-color: #73303a;
+        background: #291017;
+        color: #fecaca;
+      }
+
+      .dzl-agent-approval-card {
+        border-color: #805b16;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(120, 75, 5, .13),
+            rgba(6, 13, 24, .92)
+          );
+      }
+
+      .dzl-agent-approval-title {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .dzl-agent-approval-badge {
+        border: 1px solid #9a6b16;
+        border-radius: 999px;
+        padding: 2px 7px;
+        color: #fde68a;
+        font-size: 9px;
+        font-weight: 700;
+      }
+
+      .dzl-agent-preview,
+      .dzl-agent-result {
+        box-sizing: border-box;
+        overflow: auto;
+        width: 100%;
+        max-height: 240px;
+        margin: 8px 0 0;
+        padding: 9px;
+        border: 1px solid #172b45;
+        border-radius: 6px;
+        background: #040b14;
+        color: #cbd5e1;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family:
+          ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Monaco,
+          Consolas,
+          monospace;
+        font-size: 10px;
+        line-height: 1.45;
+      }
+
+      .dzl-agent-activity-card {
+        flex: 1 1 260px;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dzl-agent-events {
+        flex: 1;
+        min-height: 120px;
+        max-height: 330px;
+        overflow: auto;
+        padding-right: 2px;
+      }
+
+      .dzl-agent-event {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+        gap: 5px;
+        align-items: start;
+        padding: 6px 4px;
+        border-bottom: 1px solid rgba(42, 65, 92, .45);
+        font-size: 10px;
+      }
+
+      .dzl-agent-event:last-child {
+        border-bottom: 0;
+      }
+
+      .dzl-agent-event-icon {
+        text-align: center;
+        font-weight: 800;
+      }
+
+      .dzl-agent-event-main {
+        min-width: 0;
+      }
+
+      .dzl-agent-event-label {
+        color: #dbeafe;
+        overflow-wrap: anywhere;
+      }
+
+      .dzl-agent-event-meta {
+        margin-top: 2px;
+        color: #718399;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+
+      .dzl-agent-event-time {
+        color: #64748b;
+        font-size: 9px;
+        white-space: nowrap;
+      }
+
+      .dzl-agent-event[data-status="success"]
+      .dzl-agent-event-icon {
+        color: #86efac;
+      }
+
+      .dzl-agent-event[data-status="running"]
+      .dzl-agent-event-icon {
+        color: #93c5fd;
+      }
+
+      .dzl-agent-event[data-status="queued"]
+      .dzl-agent-event-icon {
+        color: #fde68a;
+      }
+
+      .dzl-agent-event[data-status="stopped"]
+      .dzl-agent-event-icon {
+        color: #fbbf24;
+      }
+
+      .dzl-agent-event[data-status="failed"]
+      .dzl-agent-event-icon {
+        color: #fca5a5;
+      }
+
+      .dzl-agent-result {
+        min-height: 58px;
+        max-height: 180px;
+      }
+
+      .dzl-agent-empty {
+        padding: 18px 8px;
+        text-align: center;
+        color: #718399;
+        font-size: 10px;
+      }
+
+      @media (max-width: 720px) {
+        .dzl-agent-input {
+          min-height: 105px;
+        }
+
+        .dzl-agent-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .dzl-agent-actions .dzl-agent-button {
+          width: 100%;
+        }
+
+        .dzl-agent-events {
+          max-height: 300px;
+        }
+      }
 
     </style>
     </head>
@@ -1215,6 +1790,11 @@ data:
           </div>
 
           <div class="dzl-terminal-shortcuts">
+            <div class="dzl-split-presets">
+              <button class="dzl-terminal-shortcut" type="button" onclick="dzlSetSplit(70)">70/30</button>
+              <button class="dzl-terminal-shortcut" type="button" onclick="dzlSetSplit(55)">55/45</button>
+              <button class="dzl-terminal-shortcut" type="button" onclick="dzlSetSplit(35)">35/65</button>
+            </div>
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('cd ~/devops-lab && git status --short')">Git</button>
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get pods -A')">Pods</button>
             <button class="dzl-terminal-shortcut" type="button" onclick="dzlCopyCommand('kubectl get applications -n argocd')">Argo</button>
@@ -1224,8 +1804,24 @@ data:
           </div>
         </div>
 
-    <div id="dzl-terminal-split" style="display:grid;grid-template-columns:minmax(0,3fr) minmax(320px,2fr);gap:10px;flex:1;min-height:0;padding:0 8px 8px">
-    <div class="dzl-terminal-frame-wrap">
+    <div class="dzl-mobile-workspace-tabs" aria-label="Workspace">
+      <button
+        type="button"
+        class="dzl-mobile-workspace-tab active"
+        data-dzl-mobile-workspace="terminal"
+        onclick="dzlSetMobileWorkspace('terminal')"
+      >Terminal</button>
+
+      <button
+        type="button"
+        class="dzl-mobile-workspace-tab"
+        data-dzl-mobile-workspace="ai"
+        onclick="dzlSetMobileWorkspace('ai')"
+      >AI Workspace</button>
+    </div>
+
+    <div id="dzl-terminal-split" class="dzl-terminal-split">
+    <div class="dzl-terminal-frame-wrap" data-dzl-workspace-pane="terminal">
 
           <iframe
             id="dzl-terminal-frame"
@@ -1236,7 +1832,19 @@ data:
 
         </div>
 
-        <aside id="dzl-ai-workspace" style="border:1px solid #263a58;border-radius:8px;background:#091424;padding:12px;overflow:hidden;color:#e8f1ff;display:flex;flex-direction:column;min-height:0">
+        <div
+          id="dzl-split-handle"
+          class="dzl-split-handle"
+          role="separator"
+          aria-label="Resize terminal and AI workspace"
+          title="Drag to resize"
+        ></div>
+
+        <aside
+          id="dzl-ai-workspace"
+          class="dzl-ai-workspace"
+          data-dzl-workspace-pane="ai"
+        >
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
             <div>
               <strong>DZL AI Workspace</strong>
@@ -1252,13 +1860,193 @@ data:
             <span style="font-size:11px;border:1px solid #236b52;border-radius:999px;padding:3px 7px;color:#86efac">LOCAL · PRIVATE</span>
           </div>
 
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-            <button class="dzl-terminal-shortcut" onclick="dzlAiNewChat()">Local AI</button>
-            <button class="dzl-terminal-shortcut" onclick="dzlCopyCommand('cd ~/devops-lab && openclaude --provider ollama')">OpenClaude</button>
-            <button class="dzl-terminal-shortcut" onclick="window.open('https://chatgpt.com','_blank')">ChatGPT ↗</button>
-            <button class="dzl-terminal-shortcut" onclick="window.open('https://claude.ai','_blank')">Claude ↗</button>
-            <button class="dzl-terminal-shortcut" onclick="window.open('https://gemini.google.com','_blank')">Gemini ↗</button>
+          <div class="dzl-ai-tabs" role="tablist">
+            <button class="dzl-ai-tab active" type="button" data-dzl-ai-tab="agent" onclick="dzlSelectAiTab('agent')">Agent</button>
+            <button class="dzl-ai-tab" type="button" data-dzl-ai-tab="local" onclick="dzlSelectAiTab('local')">Local AI</button>
+            <button class="dzl-ai-tab" type="button" data-dzl-ai-tab="chatgpt" onclick="dzlSelectAiTab('chatgpt')">ChatGPT</button>
+            <button class="dzl-ai-tab" type="button" data-dzl-ai-tab="claude" onclick="dzlSelectAiTab('claude')">Claude</button>
+            <button class="dzl-ai-tab" type="button" data-dzl-ai-tab="gemini" onclick="dzlSelectAiTab('gemini')">Gemini</button>
           </div>
+
+          <!-- DZL_AGENT_UI_V81 -->
+          <div
+            class="dzl-ai-panel active"
+            data-dzl-ai-panel="agent"
+            id="dzl-agent-panel"
+          >
+            <div class="dzl-agent-header dzl-agent-live-header">
+              <div>
+                <div class="dzl-agent-name">
+                  DZL AGENT
+                </div>
+
+                <div
+                  id="dzl-agent-meta"
+                  class="dzl-agent-meta"
+                >
+                  Connecting to Agent backend...
+                </div>
+              </div>
+
+              <div class="dzl-agent-header-status">
+                <span
+                  id="dzl-agent-state"
+                  class="dzl-agent-state"
+                  data-state="OFFLINE"
+                >
+                  OFFLINE
+                </span>
+
+                <span class="dzl-agent-mode">
+                  SAFE
+                </span>
+              </div>
+            </div>
+
+            <div class="dzl-agent-context">
+              <span>● Repository</span>
+              <span>● Native Tools</span>
+              <span>● Approval Gates</span>
+              <span>○ Graphify</span>
+              <span>○ Hindsight</span>
+            </div>
+
+            <div class="dzl-agent-card dzl-agent-task-card">
+              <div class="dzl-agent-section-title">
+                <strong>Engineering task</strong>
+
+                <span
+                  id="dzl-agent-task-state"
+                  class="dzl-agent-muted"
+                >
+                  Ready
+                </span>
+              </div>
+
+              <textarea
+                id="dzl-agent-input"
+                class="dzl-agent-input"
+                placeholder="Inspect, repair or improve the infrastructure..."
+              ></textarea>
+
+              <div class="dzl-agent-actions">
+                <button
+                  id="dzl-agent-run"
+                  class="dzl-agent-button dzl-agent-button-primary"
+                  type="button"
+                  onclick="dzlAgentRun()"
+                >
+                  Run task
+                </button>
+
+                <button
+                  id="dzl-agent-stop"
+                  class="dzl-agent-button dzl-agent-button-danger"
+                  type="button"
+                  onclick="dzlAgentStop()"
+                  disabled
+                >
+                  Stop
+                </button>
+
+                <button
+                  class="dzl-agent-button"
+                  type="button"
+                  onclick="dzlAgentRefresh()"
+                >
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="dzl-agent-approval"
+              class="dzl-agent-card dzl-agent-approval-card"
+              hidden
+            >
+              <div class="dzl-agent-approval-title">
+                <div>
+                  <strong>Approval required</strong>
+
+                  <div
+                    id="dzl-agent-approval-tool"
+                    class="dzl-agent-meta"
+                  >
+                    write_file
+                  </div>
+                </div>
+
+                <span class="dzl-agent-approval-badge">
+                  WAITING
+                </span>
+              </div>
+
+              <pre
+                id="dzl-agent-approval-preview"
+                class="dzl-agent-preview"
+              ></pre>
+
+              <div class="dzl-agent-actions">
+                <button
+                  class="dzl-agent-button dzl-agent-button-danger"
+                  type="button"
+                  onclick="dzlAgentReject()"
+                >
+                  Reject
+                </button>
+
+                <button
+                  class="dzl-agent-button dzl-agent-button-primary"
+                  type="button"
+                  onclick="dzlAgentApprove()"
+                >
+                  Approve
+                </button>
+              </div>
+            </div>
+
+            <div class="dzl-agent-card dzl-agent-activity-card">
+              <div class="dzl-agent-section-title">
+                <strong>Activity</strong>
+
+                <span
+                  id="dzl-agent-activity-status"
+                  class="dzl-agent-muted"
+                >
+                  Waiting
+                </span>
+              </div>
+
+              <div
+                id="dzl-agent-events"
+                class="dzl-agent-events"
+              >
+                <div class="dzl-agent-empty">
+                  No Agent activity yet.
+                </div>
+              </div>
+            </div>
+
+            <div class="dzl-agent-card dzl-agent-result-card">
+              <div class="dzl-agent-section-title">
+                <strong>Result</strong>
+
+                <span
+                  id="dzl-agent-result-state"
+                  class="dzl-agent-muted"
+                >
+                  —
+                </span>
+              </div>
+
+              <pre
+                id="dzl-agent-result"
+                class="dzl-agent-result"
+              >No result yet.</pre>
+            </div>
+          </div>
+
+          <div class="dzl-ai-panel" data-dzl-ai-panel="local">
 
           <div id="dzl-ai-chat" style="flex:1;min-height:120px;overflow:auto;border:1px solid #172b45;border-radius:7px;background:#050d18;padding:9px;font-size:12px;white-space:pre-wrap;margin-bottom:8px">
             <div style="color:#8194aa">DZL Local AI ready.</div>
@@ -1274,6 +2062,28 @@ data:
           <div style="display:flex;gap:6px">
             <button class="dzl-terminal-shortcut" style="flex:1" onclick="dzlAiSend()">Send</button>
             <button class="dzl-terminal-shortcut" style="flex:1" onclick="dzlAskLastOutput()">Ask terminal</button>
+          </div>
+          </div>
+
+          <div class="dzl-ai-panel" data-dzl-ai-panel="chatgpt">
+            <div class="dzl-browser-placeholder">
+              <strong>ChatGPT Workspace</strong>
+              <span>Integrated private browser workspace will be connected in a later stage.</span>
+            </div>
+          </div>
+
+          <div class="dzl-ai-panel" data-dzl-ai-panel="claude">
+            <div class="dzl-browser-placeholder">
+              <strong>Claude Workspace</strong>
+              <span>Integrated private browser workspace will be connected in a later stage.</span>
+            </div>
+          </div>
+
+          <div class="dzl-ai-panel" data-dzl-ai-panel="gemini">
+            <div class="dzl-browser-placeholder">
+              <strong>Gemini Workspace</strong>
+              <span>Integrated private browser workspace will be connected in a later stage.</span>
+            </div>
           </div>
         </aside>
       </div>
@@ -1709,9 +2519,10 @@ data:
               }
             };
 
-    
+
             const DZL_AI_URL = "https://dzl.tail52c2d4.ts.net:8446";
             const DZL_SESSION_URL = "https://dzl.tail52c2d4.ts.net:8444";
+            const DZL_AGENT_URL = "https://dzl.tail52c2d4.ts.net:8447";
 
             function dzlAiAppend(role, text) {
               const box = document.getElementById("dzl-ai-chat");
@@ -1823,5 +2634,806 @@ data:
             dzlAiHealth();
 
     </script>
+
+    <script>
+    /* DZL_CONSOLE_V8_CONTROLLER */
+    (function () {
+
+      const split =
+        document.getElementById("dzl-terminal-split");
+
+      const handle =
+        document.getElementById("dzl-split-handle");
+
+      window.dzlSetSplit = function(percent) {
+
+        if (!split) return;
+
+        const value =
+          Math.max(28, Math.min(72, Number(percent) || 55));
+
+        split.style.setProperty(
+          "--dzl-terminal-pane",
+          value + "%"
+        );
+
+        try {
+          localStorage.setItem(
+            "dzl-console-split",
+            String(value)
+          );
+        } catch (_) {}
+      };
+
+
+      /* DZL_AGENT_UI_V81_CONTROLLER */
+
+      let dzlAgentStatus = null;
+      let dzlAgentPollBusy = false;
+
+      function dzlAgentEl(id) {
+        return document.getElementById(id);
+      }
+
+      function dzlAgentStatusIcon(status) {
+        if (status === "success") return "✓";
+        if (status === "running") return "●";
+        if (status === "queued") return "◐";
+        if (status === "stopped") return "×";
+        if (status === "failed") return "!";
+        return "○";
+      }
+
+      function dzlAgentFormatTime(value) {
+        if (!value) return "";
+
+        const match =
+          String(value).match(
+            /T(\d{2}):(\d{2}):(\d{2})/
+          );
+
+        if (!match) return "";
+
+        return (
+          match[1] +
+          ":" +
+          match[2] +
+          ":" +
+          match[3]
+        );
+      }
+
+      async function dzlAgentRequest(
+        path,
+        options
+      ) {
+        const response = await fetch(
+          DZL_AGENT_URL + path,
+          Object.assign(
+            {
+              cache: "no-store"
+            },
+            options || {}
+          )
+        );
+
+        let data = null;
+
+        try {
+          data = await response.json();
+        } catch (_) {
+          data = {};
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "HTTP " + response.status
+          );
+        }
+
+        return data;
+      }
+
+      function dzlAgentRenderStatus(data) {
+        dzlAgentStatus = data || {};
+
+        const state =
+          data && data.state
+            ? data.state
+            : "OFFLINE";
+
+        const badge =
+          dzlAgentEl("dzl-agent-state");
+
+        if (badge) {
+          badge.textContent = state;
+          badge.dataset.state = state;
+        }
+
+        const meta =
+          dzlAgentEl("dzl-agent-meta");
+
+        if (meta) {
+          meta.textContent =
+            (data.model || "unknown model") +
+            " · " +
+            (data.branch || "unknown branch");
+        }
+
+        const task = data.task || null;
+        const pending =
+          data.pending_approval || null;
+
+        const run =
+          dzlAgentEl("dzl-agent-run");
+
+        const stop =
+          dzlAgentEl("dzl-agent-stop");
+
+        if (run) {
+          run.disabled =
+            state === "BUSY" ||
+            state === "WAITING_APPROVAL";
+        }
+
+        if (stop) {
+          stop.disabled = !(
+            state === "BUSY" ||
+            state === "WAITING_APPROVAL"
+          );
+        }
+
+        const taskState =
+          dzlAgentEl(
+            "dzl-agent-task-state"
+          );
+
+        if (taskState) {
+          taskState.textContent =
+            task && task.status
+              ? task.status
+              : state === "READY"
+                ? "Ready"
+                : state;
+        }
+
+        const approval =
+          dzlAgentEl(
+            "dzl-agent-approval"
+          );
+
+        if (approval) {
+          approval.hidden = !pending;
+        }
+
+        if (pending) {
+          const tool =
+            dzlAgentEl(
+              "dzl-agent-approval-tool"
+            );
+
+          const preview =
+            dzlAgentEl(
+              "dzl-agent-approval-preview"
+            );
+
+          if (tool) {
+            tool.textContent =
+              pending.tool +
+              (
+                pending.arguments &&
+                pending.arguments.path
+                  ? " · " +
+                    pending.arguments.path
+                  : ""
+              );
+          }
+
+          if (preview) {
+            preview.textContent =
+              pending.preview ||
+              JSON.stringify(
+                pending.arguments || {},
+                null,
+                2
+              );
+          }
+        }
+
+        const result =
+          dzlAgentEl("dzl-agent-result");
+
+        const resultState =
+          dzlAgentEl(
+            "dzl-agent-result-state"
+          );
+
+        if (task && task.result) {
+          if (result) {
+            result.textContent =
+              String(task.result);
+          }
+
+          if (resultState) {
+            resultState.textContent =
+              task.status || "complete";
+          }
+        } else if (
+          task &&
+          task.status === "running"
+        ) {
+          if (result) {
+            result.textContent =
+              "Task in progress...";
+          }
+
+          if (resultState) {
+            resultState.textContent =
+              "running";
+          }
+        }
+      }
+
+      function dzlAgentRenderEvents(
+        events,
+        status
+      ) {
+        const box =
+          dzlAgentEl("dzl-agent-events");
+
+        if (!box) return;
+
+        let rows =
+          Array.isArray(events)
+            ? events.slice()
+            : [];
+
+        const task =
+          status && status.task
+            ? status.task
+            : null;
+
+        /*
+         * Events are persisted between restarts.
+         * For a current/last task, show only
+         * events from that task's start time.
+         */
+        if (
+          task &&
+          task.started_at
+        ) {
+          rows = rows.filter(
+            function(event) {
+              return (
+                !event.timestamp ||
+                event.timestamp >=
+                  task.started_at
+              );
+            }
+          );
+        }
+
+        rows = rows.slice(-50);
+
+        box.textContent = "";
+
+        if (!rows.length) {
+          const empty =
+            document.createElement("div");
+
+          empty.className =
+            "dzl-agent-empty";
+
+          empty.textContent =
+            "No Agent activity yet.";
+
+          box.appendChild(empty);
+          return;
+        }
+
+        rows.forEach(function(event) {
+          const row =
+            document.createElement("div");
+
+          row.className =
+            "dzl-agent-event";
+
+          row.dataset.status =
+            event.status || "";
+
+          const icon =
+            document.createElement("div");
+
+          icon.className =
+            "dzl-agent-event-icon";
+
+          icon.textContent =
+            dzlAgentStatusIcon(
+              event.status
+            );
+
+          const main =
+            document.createElement("div");
+
+          main.className =
+            "dzl-agent-event-main";
+
+          const label =
+            document.createElement("div");
+
+          label.className =
+            "dzl-agent-event-label";
+
+          label.textContent =
+            event.label ||
+            event.type ||
+            "Event";
+
+          main.appendChild(label);
+
+          const details = [];
+
+          if (event.type) {
+            details.push(event.type);
+          }
+
+          if (event.target) {
+            details.push(event.target);
+          }
+
+          if (event.summary) {
+            details.push(
+              String(event.summary)
+                .slice(0, 700)
+            );
+          }
+
+          if (details.length) {
+            const meta =
+              document.createElement(
+                "div"
+              );
+
+            meta.className =
+              "dzl-agent-event-meta";
+
+            meta.textContent =
+              details.join(" · ");
+
+            main.appendChild(meta);
+          }
+
+          const when =
+            document.createElement("div");
+
+          when.className =
+            "dzl-agent-event-time";
+
+          when.textContent =
+            dzlAgentFormatTime(
+              event.timestamp
+            );
+
+          row.appendChild(icon);
+          row.appendChild(main);
+          row.appendChild(when);
+
+          box.appendChild(row);
+        });
+
+        box.scrollTop =
+          box.scrollHeight;
+
+        const activityStatus =
+          dzlAgentEl(
+            "dzl-agent-activity-status"
+          );
+
+        if (activityStatus) {
+          activityStatus.textContent =
+            rows.length +
+            " event" +
+            (rows.length === 1 ? "" : "s");
+        }
+      }
+
+      window.dzlAgentRefresh =
+        async function() {
+          if (dzlAgentPollBusy) {
+            return;
+          }
+
+          dzlAgentPollBusy = true;
+
+          try {
+            const results =
+              await Promise.all([
+                dzlAgentRequest(
+                  "/agent/status"
+                ),
+                dzlAgentRequest(
+                  "/agent/events"
+                )
+              ]);
+
+            dzlAgentRenderStatus(
+              results[0]
+            );
+
+            dzlAgentRenderEvents(
+              results[1].events || [],
+              results[0]
+            );
+
+          } catch (err) {
+            const badge =
+              dzlAgentEl(
+                "dzl-agent-state"
+              );
+
+            if (badge) {
+              badge.textContent =
+                "OFFLINE";
+
+              badge.dataset.state =
+                "OFFLINE";
+            }
+
+            const meta =
+              dzlAgentEl(
+                "dzl-agent-meta"
+              );
+
+            if (meta) {
+              meta.textContent =
+                "Agent API unavailable";
+            }
+
+          } finally {
+            dzlAgentPollBusy = false;
+          }
+        };
+
+      window.dzlAgentRun =
+        async function() {
+          const input =
+            dzlAgentEl(
+              "dzl-agent-input"
+            );
+
+          const instruction =
+            (
+              input &&
+              input.value
+                ? input.value
+                : ""
+            ).trim();
+
+          if (!instruction) {
+            return;
+          }
+
+          const run =
+            dzlAgentEl(
+              "dzl-agent-run"
+            );
+
+          if (run) {
+            run.disabled = true;
+          }
+
+          try {
+            await dzlAgentRequest(
+              "/agent/tasks",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  instruction:
+                    instruction
+                })
+              }
+            );
+
+            await dzlAgentRefresh();
+
+          } catch (err) {
+            const result =
+              dzlAgentEl(
+                "dzl-agent-result"
+              );
+
+            if (result) {
+              result.textContent =
+                "Task start failed: " +
+                err.message;
+            }
+
+            if (run) {
+              run.disabled = false;
+            }
+          }
+        };
+
+      window.dzlAgentApprove =
+        async function() {
+          const pending =
+            dzlAgentStatus &&
+            dzlAgentStatus
+              .pending_approval;
+
+          if (!pending || !pending.id) {
+            return;
+          }
+
+          try {
+            await dzlAgentRequest(
+              "/agent/approve",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  approval_id:
+                    pending.id
+                })
+              }
+            );
+
+            await dzlAgentRefresh();
+
+          } catch (err) {
+            console.error(
+              "DZL Agent approve:",
+              err
+            );
+          }
+        };
+
+      window.dzlAgentReject =
+        async function() {
+          const pending =
+            dzlAgentStatus &&
+            dzlAgentStatus
+              .pending_approval;
+
+          if (!pending || !pending.id) {
+            return;
+          }
+
+          try {
+            await dzlAgentRequest(
+              "/agent/reject",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  approval_id:
+                    pending.id
+                })
+              }
+            );
+
+            await dzlAgentRefresh();
+
+          } catch (err) {
+            console.error(
+              "DZL Agent reject:",
+              err
+            );
+          }
+        };
+
+      window.dzlAgentStop =
+        async function() {
+          try {
+            await dzlAgentRequest(
+              "/agent/stop",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: "{}"
+              }
+            );
+
+            await dzlAgentRefresh();
+
+          } catch (err) {
+            console.error(
+              "DZL Agent stop:",
+              err
+            );
+          }
+        };
+
+      /*
+       * Polling is deliberately modest.
+       * Agent tool execution does not
+       * require sub-second UI updates.
+       */
+      setInterval(
+        function() {
+          const panel =
+            document.querySelector(
+              '[data-dzl-ai-panel="agent"]'
+            );
+
+          if (
+            panel &&
+            panel.classList.contains(
+              "active"
+            )
+          ) {
+            dzlAgentRefresh();
+          }
+        },
+        1250
+      );
+
+      setTimeout(
+        function() {
+          dzlAgentRefresh();
+        },
+        350
+      );
+
+
+      window.dzlSelectAiTab = function(name) {
+
+        document
+          .querySelectorAll("[data-dzl-ai-tab]")
+          .forEach(function(button) {
+            button.classList.toggle(
+              "active",
+              button.dataset.dzlAiTab === name
+            );
+          });
+
+        document
+          .querySelectorAll("[data-dzl-ai-panel]")
+          .forEach(function(panel) {
+            panel.classList.toggle(
+              "active",
+              panel.dataset.dzlAiPanel === name
+            );
+          });
+
+        try {
+          localStorage.setItem(
+            "dzl-ai-tab",
+            name
+          );
+        } catch (_) {}
+      };
+
+      window.dzlSetMobileWorkspace =
+        function(name) {
+
+          if (!split) return;
+
+          split.classList.toggle(
+            "mobile-ai",
+            name === "ai"
+          );
+
+          document
+            .querySelectorAll(
+              "[data-dzl-mobile-workspace]"
+            )
+            .forEach(function(button) {
+              button.classList.toggle(
+                "active",
+                button.dataset.dzlMobileWorkspace === name
+              );
+            });
+        };
+
+      try {
+
+        const savedSplit =
+          Number(
+            localStorage.getItem(
+              "dzl-console-split"
+            )
+          );
+
+        if (savedSplit) {
+          window.dzlSetSplit(savedSplit);
+        }
+
+        const savedTab =
+          localStorage.getItem("dzl-ai-tab");
+
+        if (savedTab) {
+          window.dzlSelectAiTab(savedTab);
+        } else {
+          window.dzlSelectAiTab("agent");
+        }
+
+      } catch (_) {
+
+        window.dzlSelectAiTab("agent");
+
+      }
+
+      if (handle && split) {
+
+        let dragging = false;
+
+        function move(event) {
+
+          if (!dragging) return;
+
+          const rect =
+            split.getBoundingClientRect();
+
+          const x =
+            event.clientX - rect.left;
+
+          const percent =
+            x / rect.width * 100;
+
+          window.dzlSetSplit(percent);
+        }
+
+        handle.addEventListener(
+          "pointerdown",
+          function(event) {
+
+            if (window.innerWidth <= 900) {
+              return;
+            }
+
+            dragging = true;
+
+            handle.classList.add(
+              "dragging"
+            );
+
+            handle.setPointerCapture(
+              event.pointerId
+            );
+          }
+        );
+
+        handle.addEventListener(
+          "pointermove",
+          move
+        );
+
+        handle.addEventListener(
+          "pointerup",
+          function(event) {
+
+            dragging = false;
+
+            handle.classList.remove(
+              "dragging"
+            );
+
+            try {
+              handle.releasePointerCapture(
+                event.pointerId
+              );
+            } catch (_) {}
+          }
+        );
+      }
+
+    })();
+    </script>
+
     </body>
     </html>
