@@ -1,0 +1,23 @@
+[Unit]
+Description=DZL Agent Backend
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dizal
+Group=dizal
+WorkingDirectory=/home/dizal/devops-lab
+
+Environment=DZL_AGENT_MODEL=gpt-oss:20b
+
+ExecStart=/usr/bin/python3 /home/dizal/devops-lab/web-ops-console/agent/agent_server.py
+
+Restart=on-failure
+RestartSec=3
+
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
