@@ -455,6 +455,9 @@ def tool_write_file(arguments):
     )
 
     return (
+        "APPROVED_AND_EXECUTED: true\n"
+        "tool=write_file\n"
+        f"path={p}\n"
         f"WRITE_OK: {p}\n"
         f"characters={len(content)}"
     )
@@ -840,6 +843,10 @@ Complete the requested workflow before the final response.
 
     final_text = None
 
+    # DZL_AGENT_V811_APPROVAL_CONTINUATION
+    mutation_executed = False
+    continuation_guard_used = False
+
     try:
         for turn in range(1, 13):
             if STOP_EVENT.is_set():
@@ -885,12 +892,71 @@ Complete the requested workflow before the final response.
             )
 
             if not calls:
-                final_text = (
+                candidate_final = (
                     message.get(
                         "content",
                         "",
                     ).strip()
                 )
+
+                # DZL_AGENT_V811_FINAL_GUARD
+                stale_approval_phrases = (
+                    "wait for operator approval",
+                    "waiting for operator approval",
+                    "wait for approval",
+                    "waiting for approval",
+                    "awaiting approval",
+                    "please confirm",
+                )
+
+                stale_final = (
+                    mutation_executed
+                    and any(
+                        phrase
+                        in candidate_final.lower()
+                        for phrase
+                        in stale_approval_phrases
+                    )
+                )
+
+                if (
+                    stale_final
+                    and not continuation_guard_used
+                ):
+                    continuation_guard_used = True
+
+                    event(
+                        "STATE",
+                        "running",
+                        "Approval continuation guard",
+                        summary=(
+                            "Rejected stale final response; "
+                            "approved mutation already executed"
+                        ),
+                    )
+
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                "DZL ORCHESTRATOR STATE: "
+                                "The previous write_file operation "
+                                "was already approved by the operator "
+                                "and executed successfully. "
+                                "Do not request approval again for "
+                                "that completed write. Continue the "
+                                "original task now. Perform every "
+                                "remaining requested read-back or "
+                                "verification step using the "
+                                "available read-only tools, then "
+                                "return the requested final result."
+                            ),
+                        }
+                    )
+
+                    continue
+
+                final_text = candidate_final
 
                 event(
                     "RESULT",
@@ -941,6 +1007,41 @@ Complete the requested workflow before the final response.
                         "content": result,
                     }
                 )
+
+                # DZL_AGENT_V811_TOOL_CONTINUATION
+                if (
+                    name == "write_file"
+                    and result.startswith(
+                        "APPROVED_AND_EXECUTED: true"
+                    )
+                ):
+                    mutation_executed = True
+
+                    event(
+                        "STATE",
+                        "success",
+                        "Approved mutation executed",
+                        target=arguments.get("path"),
+                        summary="write_file",
+                    )
+
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                "DZL ORCHESTRATOR STATE: "
+                                "write_file was approved by the "
+                                "operator and has already executed "
+                                "successfully. The approval is "
+                                "consumed. Do not ask for approval "
+                                "again for this completed write. "
+                                "Continue the original workflow. "
+                                "If read-back or verification was "
+                                "requested, perform it before the "
+                                "final response."
+                            ),
+                        }
+                    )
 
         else:
             raise RuntimeError(
